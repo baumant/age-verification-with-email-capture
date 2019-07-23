@@ -2,6 +2,8 @@
 
 {% assign backgroundUrl = "none" %}
 
+{% assign redirectUrl = "http://google.com" %}
+
 {% assign age = 21 %}
 
 {% capture adult_header %}
@@ -76,7 +78,13 @@ This website contains adult material and is only suitable for those {{age}} year
       </select>
       <select name="byear" id="byear"{% unless enter_date_of_birth %} value="1950"{% endunless %}>
         {% if enter_date_of_birth %}
-        <option value="2015">- Year -</option>
+        <option value="3000">- Year -</option>
+        <option value="2018">2018</option>
+        <option value="2017">2017</option>
+        <option value="2016">2016</option>
+        <option value="2015">2015</option>
+        <option value="2014">2014</option>
+        <option value="2013">2013</option>
         <option value="2012">2012</option>
         <option value="2011">2011</option>
         <option value="2010">2010</option>
@@ -180,26 +188,31 @@ This website contains adult material and is only suitable for those {{age}} year
         <option value="1912">1912</option>
         <option value="1911">1911</option>
         <option value="1910">1910</option>
+        <option value="1909">1909</option>
+        <option value="1908">1908</option>
+        <option value="1907">1907</option>
+        <option value="1906">1906</option>
+        <option value="1905">1905</option>
       {% endif %}
       </select>
       <div style="clear:both; margin-bottom:15px"></div>
     </div>
     <button id="submit_birthdate" class="button-enter btn styled-submit" onclick="ageCheck()" style="display:inline-block">Enter</button> 
     <span style="padding: 0 4px">or</span>
-    <a href="http://google.com/" id="button-exit" name="button-exit">Exit</a>
+    <a href="{{ redirectUrl }}" id="button-exit" name="button-exit">Exit</a>
   </div>
 </div>
 
 <script>
  function ageCheck() {
-   var min_age = {{ age }};  // Set the minimum age. 
+   var min_age = {{ age }};
    var year =   parseInt(document.getElementById('byear').value);
    var month =  parseInt(document.getElementById('bmonth').value);
    var day =    parseInt(document.getElementById('bday').value);
    var theirDate = new Date((year + min_age), month, day);
    var today = new Date;
    if ((today.getTime() - theirDate.getTime()) < 0) {
-     window.location = 'http://google.com'; //enter domain url where you would like the underaged visitor to be sent to.
+     window.location = '{{ redirectUrl }}';
    } else {
      var days = 14; //number of days until they must go through the age checker again.
      var date = new Date();
