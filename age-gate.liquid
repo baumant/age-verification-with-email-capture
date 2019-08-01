@@ -1,28 +1,37 @@
-{% assign enter_date_of_birth = false %}
+{% assign enter_date_of_birth = false %}<!-- enter_date_of_birth -->
 
-{% assign backgroundUrl = "none" %}
+{% assign backgroundUrl = "none" %}<!-- backgroundUrl -->
 
-{% assign redirectUrl = "http://google.com" %}
+{% assign logoUrl = "none" %}<!-- logoUrl -->
+
+{% assign redirectUrl = "http://google.com" %}<!-- redirectUrl -->
 
 {% assign age = 21 %}<!-- age variable -->
 
-{% capture adult_header %}
-Adults only ({{age}}+)
-{% endcapture %}
+{% assign rememberDays = 14 %}<!-- rememberDays -->
 
-{% capture adult_text %}
-This website contains adult material and is only suitable for those {{age}} years or older. Click Enter only if you are at least {{age}} years of age.
-{% endcapture %}
+{% assign dontShow = false %}<!-- dontShow -->
+
+{% capture adult_header %}You must be of legal age to enter this site{% endcapture %}<!-- adult_header -->
+
+{% capture adult_text %}This website contains adult material and is only suitable for those {{age}} years or older. Click Enter only if you are at least {{age}} years of age.{% endcapture %}<!-- adult_text -->
+
+{% assign exitButton = true %}<!-- exitButton -->
+
+{% assign exitButtonColor = "hsl(0,90%,60%)" %}<!-- exitButtonColor -->
 
 <div id="prompt-background">
   <div id="age-check-prompt" class="modal-prompt">
+    {% if logoUrl != 'none' %}
+      <img src="{{logoUrl}}" alt="logo">
+    {% endif %}
     <h1>
       {{ adult_header }}
     </h1>
     <p>
       {{ adult_text }}
     </p>
-    <div{% unless enter_date_of_birth %} style="display:none;"{% endunless %}>
+    <div class="ag-dob-select" {% unless enter_date_of_birth %} style="display:none;"{% endunless %}>
       <select name="bmonth" id="bmonth"{% unless enter_date_of_birth %} value="1"{% endunless %}>
         {% if enter_date_of_birth %}
         <option value="1">- Month -</option>
@@ -197,9 +206,9 @@ This website contains adult material and is only suitable for those {{age}} year
       </select>
       <div style="clear:both; margin-bottom:15px"></div>
     </div>
-    <button id="submit_birthdate" class="button-enter btn styled-submit" onclick="ageCheck()" style="display:inline-block">Enter</button> 
+    <button id="submit_birthdate" class="button-enter btn styled-submit" onclick="ageCheck()" style="display:inline-block;">Enter</button> 
     <span style="padding: 0 4px">or</span>
-    <a href="{{ redirectUrl }}" id="button-exit" name="button-exit">Exit</a>
+    <a href="{{ redirectUrl }}" id="button-exit" {% if exitButton %}class="btn" style="background-color:{{exitButtonColor}}"{% endif %} name="button-exit">Exit</a>
   </div>
 </div>
 
@@ -214,7 +223,7 @@ This website contains adult material and is only suitable for those {{age}} year
    if ((today.getTime() - theirDate.getTime()) < 0) {
      window.location = '{{ redirectUrl }}';
    } else {
-     var days = 14; //number of days until they must go through the age checker again.
+     var days = {{rememberDays}};
      var date = new Date();
      date.setTime(date.getTime()+(days*24*60*60*1000));
      var expires = "; expires="+date.toGMTString();
@@ -235,8 +244,8 @@ This website contains adult material and is only suitable for those {{age}} year
   };
 
   var twentyone = readCookie('twentyone');
-  if (twentyone) {
-    document.write("<style> #prompt-background { display: none; }</style>");
+  if (twentyone || {{dontShow}}) {
+    document.write("<style> #prompt-background { display: none !important; }</style>");
   };
 
 </script>
@@ -247,17 +256,28 @@ This website contains adult material and is only suitable for those {{age}} year
   background: #fff;
   border-radius: 2px;
   box-shadow: 0px 0px 10px rgba(0,0,0,0.5);
-  width: 330px;
+  width: 440px;
   height: auto;
   margin: 0 auto;
-  padding: 20px 35px 30px 35px;
+  padding: 20px 30px 30px 30px;
   position: relative;
   top: 25%;
   z-index: 1000000;
 }
-
-.modal-prompt p, .modal-prompt h1 {
-  color: #555555;
+.ag-dob-select{
+  display: flex;
+  margin-bottom:20px;
+}
+@media screen and (max-width: 768px){
+  .modal-prompt{
+    width: 90%;
+  }
+}
+@media screen and (max-width: 500px){
+  .ag-dob-select select{
+    margin-top: 5px;
+    margin-bottom: 5px;
+  }
 }
 
 #prompt-background {
