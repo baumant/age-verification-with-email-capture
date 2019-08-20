@@ -10,6 +10,6 @@ module.exports = withCSS(
       config.plugins.push(new webpack.DefinePlugin(env));
       return config;
     },
-    assetPrefix: process.env.NODE_ENV === 'production' ? 'https://thirsty-saha-a4f06b.netlify.com' : '',
+    assetPrefix: process.env.NODE_ENV === 'production' ? 'https://shopify-age-gate.herokuapp.com' : '',
   }
 )
