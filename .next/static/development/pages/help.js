@@ -44248,9 +44248,9 @@ function (_React$Component) {
       }, react__WEBPACK_IMPORTED_MODULE_7___default.a.createElement(_shopify_polaris__WEBPACK_IMPORTED_MODULE_8__["Card"], {
         sectioned: true
       }, react__WEBPACK_IMPORTED_MODULE_7___default.a.createElement(_shopify_polaris__WEBPACK_IMPORTED_MODULE_8__["Link"], {
-        url: "https://help.shopify.com/manual",
+        url: "https://github.com/baumant/age-gate/issues",
         external: true
-      }, "Shopify Help Center")))));
+      }, "https://github.com/baumant/age-gate/issues")))));
     }
   }]);
 
@@ -44261,7 +44261,7 @@ function (_React$Component) {
 
 /***/ }),
 
-/***/ 2:
+/***/ 3:
 /*!*******************************************************************************************************************************************!*\
   !*** multi next-client-pages-loader?page=%2Fhelp&absolutePagePath=%2FUsers%2Ftimothybauman%2FGoogle%20Drive%2Fage-gate%2Fpages%2Fhelp.js ***!
   \*******************************************************************************************************************************************/
@@ -44284,5 +44284,5 @@ module.exports = dll_6dc2816e14fab51b8269;
 
 /***/ })
 
-},[[2,"static/runtime/webpack.js"]]]);
+},[[3,"static/runtime/webpack.js"]]]);
 //# sourceMappingURL=help.js.map

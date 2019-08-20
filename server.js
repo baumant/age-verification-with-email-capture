@@ -37,10 +37,11 @@ app.prepare().then(() => {
       scopes: ['read_themes', 'write_themes'],
       afterAuth(ctx) {
         const { shop, accessToken } = ctx.session;
+        console.log(shop);
           ctx.cookies.set('shopOrigin', shop, { httpOnly: false });
         ctx.redirect('/');
         console.log('installing...');
-        installAgeGate(ctx);
+        installAgeGate(ctx, next);
       },
     }),
   );

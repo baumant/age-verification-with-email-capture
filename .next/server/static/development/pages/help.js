@@ -88,7 +88,7 @@ module.exports =
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 4);
+/******/ 	return __webpack_require__(__webpack_require__.s = 5);
 /******/ })
 /************************************************************************/
 /******/ ({
@@ -462,9 +462,9 @@ function (_React$Component) {
       }, react__WEBPACK_IMPORTED_MODULE_7___default.a.createElement(_shopify_polaris__WEBPACK_IMPORTED_MODULE_8__["Card"], {
         sectioned: true
       }, react__WEBPACK_IMPORTED_MODULE_7___default.a.createElement(_shopify_polaris__WEBPACK_IMPORTED_MODULE_8__["Link"], {
-        url: "https://help.shopify.com/manual",
+        url: "https://github.com/baumant/age-gate/issues",
         external: true
-      }, "Shopify Help Center")))));
+      }, "https://github.com/baumant/age-gate/issues")))));
     }
   }]);
 
@@ -475,7 +475,7 @@ function (_React$Component) {
 
 /***/ }),
 
-/***/ 4:
+/***/ 5:
 /*!*****************************!*\
   !*** multi ./pages/help.js ***!
   \*****************************/
