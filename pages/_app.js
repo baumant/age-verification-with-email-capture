@@ -11,21 +11,27 @@ class MyApp extends App {
 
   render() {
     const { Component, pageProps } = this.props;
-    return (
-      <React.Fragment>
-        <Head>
-          <title>Age Gate</title>
-          <meta charSet="utf-8" />
-          </Head>
-          <AppProvider
-            shopOrigin={this.state.shopOrigin}
-            apiKey={API_KEY}
-            forceRedirect
-          >
-            <Component {...pageProps} />
-          </AppProvider>
-      </React.Fragment>
-    );
+    if (this.state.shopOrigin == undefined) {
+      return (
+        <p>no shopOrigin defined</p>
+      )  
+    } else {
+      return (
+        <React.Fragment>
+          <Head>
+            <title>Age Gate</title>
+            <meta charSet="utf-8" />
+            </Head>
+            <AppProvider
+              shopOrigin={this.state.shopOrigin}
+              apiKey={API_KEY}
+              forceRedirect
+            >
+              <Component {...pageProps} />
+            </AppProvider>
+        </React.Fragment>
+      );
+    }
   }
 }
 
