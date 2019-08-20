@@ -45,18 +45,14 @@ app.prepare().then(() => {
       },
     }),
   );
-
     
-  server.use(router.routes());
-  server.use(verifyRequest());
-  server.use(async (ctx) => {
+  router.get('*', verifyRequest(), async (ctx) => {
     await handle(ctx.req, ctx.res);
     ctx.respond = false;
     ctx.res.statusCode = 200;
-    return
   });
   
-  
+  server.use(router.routes());
 
   server.listen(port, () => {
     console.log(`> Ready on http://localhost:${port}`);
