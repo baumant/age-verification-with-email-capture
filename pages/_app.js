@@ -13,7 +13,7 @@ class MyApp extends App {
     const { Component, pageProps } = this.props;
     if (this.state.shopOrigin == undefined) {
       return (
-        <p>no shopOrigin defined</p>
+        <p>Loading age gate...</p>
       )  
     } else {
       return (
