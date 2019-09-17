@@ -175,7 +175,7 @@ async function checkVariables(ctx, next) {
       let subheaderVariable = ageGateLiquid.slice(subheaderVariablePos+21, afterSubheaderVariablePos);
 
       const enterButtonTextPos = ageGateLiquid.indexOf('assign enterButtonText = "');
-      const afterEnterButtonTextPos = ageGateLiquid.indexOf(' %}<!-- enterButtonText -->');
+      const afterEnterButtonTextPos = ageGateLiquid.indexOf('" %}<!-- enterButtonText -->');
       let enterButtonText = ageGateLiquid.slice(enterButtonTextPos+26, afterEnterButtonTextPos);
 
       const exitButtonVariablePos = ageGateLiquid.indexOf('assign exitButton = ');
@@ -289,7 +289,7 @@ async function updateAgeGate (ctx, next) {
       let addExitColor = addExit.slice(0,exitButtonColorVariablePos+30) + exitButtonColorHSL + addExit.slice(afterExitButtonColorVariablePos);
 
       const enterButtonTextPos = addExitColor.indexOf('assign enterButtonText = "');
-      const afterEnterButtonTextPos = addExitColor.indexOf(' %}<!-- enterButtonText -->');
+      const afterEnterButtonTextPos = addExitColor.indexOf('" %}<!-- enterButtonText -->');
       let addEnterText = addExitColor.slice(0,enterButtonTextPos+26) + ctx.request.body.enterButtonText + addExitColor.slice(afterEnterButtonTextPos);
       
       return addEnterText;
