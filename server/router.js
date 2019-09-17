@@ -178,6 +178,10 @@ async function checkVariables(ctx, next) {
       const afterEnterButtonTextPos = ageGateLiquid.indexOf('" %}<!-- enterButtonText -->');
       let enterButtonText = ageGateLiquid.slice(enterButtonTextPos+26, afterEnterButtonTextPos);
 
+      const exitButtonTextPos = ageGateLiquid.indexOf('assign exitButtonText = "');
+      const afterExitButtonTextPos = ageGateLiquid.indexOf('" %}<!-- exitButtonText -->');
+      let exitButtonText = ageGateLiquid.slice(exitButtonTextPos+25, afterExitButtonTextPos);
+
       const exitButtonVariablePos = ageGateLiquid.indexOf('assign exitButton = ');
       const afterExitButtonVariablePos = ageGateLiquid.indexOf(' %}<!-- exitButton -->');
       let exitVariable = ageGateLiquid.slice(exitButtonVariablePos+20, afterExitButtonVariablePos);
@@ -198,6 +202,7 @@ async function checkVariables(ctx, next) {
         'headerText': headingVariable,
         'subheaderText': subheaderVariable,
         'enterButtonText': enterButtonText,
+        'exitButtonText': exitButtonText,
         'exitButton': exitVariable,
       };
     })
@@ -291,8 +296,12 @@ async function updateAgeGate (ctx, next) {
       const enterButtonTextPos = addExitColor.indexOf('assign enterButtonText = "');
       const afterEnterButtonTextPos = addExitColor.indexOf('" %}<!-- enterButtonText -->');
       let addEnterText = addExitColor.slice(0,enterButtonTextPos+26) + ctx.request.body.enterButtonText + addExitColor.slice(afterEnterButtonTextPos);
+
+      const exitButtonTextPos = addEnterText.indexOf('assign exitButtonText = "');
+      const afterExitButtonTextPos = addEnterText.indexOf('" %}<!-- exitButtonText -->');
+      let addExitText = addEnterText.slice(0,exitButtonTextPos+25) + ctx.request.body.exitButtonText + addEnterText.slice(afterExitButtonTextPos);
       
-      return addEnterText;
+      return addExitText;
     })
     .catch((error) => console.log('error', error));
   console.log(updatedAgeGateLiquid);
