@@ -257,7 +257,7 @@ async function updateAgeGate (ctx, next) {
       
       const dobVariablePos = addRemember.indexOf('enter_date_of_birth = ');
       const afterDOBVariablePos = addRemember.indexOf(' %}<!-- enter_date_of_birth -->');
-      let addDOB = addRemember.slice(0,dobVariablePos+22) + ctx.request.body.requireDOB + addRemember.slice(afterDOBVariablePos);
+      let addDOB = addRemember.slice(0,dobVariablePos+22) + ctx.request.body.requireDOB.toString() + addRemember.slice(afterDOBVariablePos);
 
       const redirectUrlVariablePos = addDOB.indexOf('redirectUrl = "');
       const afterRedirectUrlVariablePos = addDOB.indexOf('" %}<!-- redirectUrl -->');
