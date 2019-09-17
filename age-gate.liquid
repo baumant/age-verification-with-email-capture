@@ -16,6 +16,10 @@
 
 {% capture adult_text %}This website contains adult material and is only suitable for those {{age}} years or older. Click Enter only if you are at least {{age}} years of age.{% endcapture %}<!-- adult_text -->
 
+{% assign enterButtonText = "ENTER" %}<!-- enterButtonText -->
+
+{% assign exitButtonText = "EXIT" %}<!-- exitButtonText -->
+
 {% assign exitButton = true %}<!-- exitButton -->
 
 {% assign exitButtonColor = "hsl(0,90%,60%)" %}<!-- exitButtonColor -->
@@ -28,9 +32,11 @@
     <h1>
       {{ adult_header }}
     </h1>
-    <p>
-      {{ adult_text }}
-    </p>
+    {% if adult_text %}
+      <p>
+        {{ adult_text }}
+      </p>
+    {% endif %}
     <div class="ag-dob-select" {% unless enter_date_of_birth %} style="display:none;"{% endunless %}>
       <select name="bmonth" id="bmonth"{% unless enter_date_of_birth %} value="1"{% endunless %}>
         {% if enter_date_of_birth %}
@@ -206,9 +212,8 @@
       </select>
       <div style="clear:both; margin-bottom:15px"></div>
     </div>
-    <button id="submit_birthdate" class="button-enter btn styled-submit" onclick="ageCheck()" style="display:inline-block;">Enter</button> 
-    <span style="padding: 0 4px">or</span>
-    <a href="{{ redirectUrl }}" id="button-exit" {% if exitButton %}class="btn" style="background-color:{{exitButtonColor}}"{% endif %} name="button-exit">Exit</a>
+    <button id="submit_birthdate" class="button-enter btn styled-submit" onclick="ageCheck()" style="display:inline-block;">{{enterButtonText}}</button> 
+    <a href="{{ redirectUrl }}" id="button-exit" {% if exitButton %}class="btn" style="background-color:{{exitButtonColor}}"{% endif %} name="button-exit">{{exitButtonText}}</a>
   </div>
 </div>
 

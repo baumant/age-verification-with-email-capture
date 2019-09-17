@@ -174,6 +174,10 @@ async function checkVariables(ctx, next) {
       const afterSubheaderVariablePos = ageGateLiquid.indexOf('{% endcapture %}<!-- adult_text -->');
       let subheaderVariable = ageGateLiquid.slice(subheaderVariablePos+21, afterSubheaderVariablePos);
 
+      const enterButtonTextPos = ageGateLiquid.indexOf('assign enterButtonText = "');
+      const afterEnterButtonTextPos = ageGateLiquid.indexOf(' %}<!-- enterButtonText -->');
+      let enterButtonText = ageGateLiquid.slice(enterButtonTextPos+26, afterEnterButtonTextPos);
+
       const exitButtonVariablePos = ageGateLiquid.indexOf('assign exitButton = ');
       const afterExitButtonVariablePos = ageGateLiquid.indexOf(' %}<!-- exitButton -->');
       let exitVariable = ageGateLiquid.slice(exitButtonVariablePos+20, afterExitButtonVariablePos);
@@ -193,6 +197,7 @@ async function checkVariables(ctx, next) {
         'redirectUrl': redirectVariable,
         'headerText': headingVariable,
         'subheaderText': subheaderVariable,
+        'enterButtonText': enterButtonText,
         'exitButton': exitVariable,
       };
     })
@@ -281,9 +286,13 @@ async function updateAgeGate (ctx, next) {
       const exitButtonColorVariablePos = addExit.indexOf('assign exitButtonColor = "hsl(');
       const afterExitButtonColorVariablePos = addExit.indexOf(')" %}<!-- exitButtonColor -->');
       const exitButtonColorHSL = ctx.request.body.exitButtonColor.hue + ', ' + (ctx.request.body.exitButtonColor.brightness*100) + '%, ' + (ctx.request.body.exitButtonColor.saturation*100) + '%';
-      let newAgeGateLiquid = addExit.slice(0,exitButtonColorVariablePos+30) + exitButtonColorHSL + addExit.slice(afterExitButtonColorVariablePos);
+      let addExitColor = addExit.slice(0,exitButtonColorVariablePos+30) + exitButtonColorHSL + addExit.slice(afterExitButtonColorVariablePos);
+
+      const enterButtonTextPos = addExitColor.indexOf('assign enterButtonText = "');
+      const afterEnterButtonTextPos = addExitColor.indexOf(' %}<!-- enterButtonText -->');
+      let addEnterText = addExitColor.slice(0,enterButtonTextPos+26) + ctx.request.body.enterButtonText + addExitColor.slice(afterEnterButtonTextPos);
       
-      return newAgeGateLiquid;
+      return addEnterText;
     })
     .catch((error) => console.log('error', error));
   console.log(updatedAgeGateLiquid);

@@ -28,6 +28,8 @@ class Index extends React.Component {
     redirectUrl: 'http://google.com',
     headerText: 'You must be {{age}}+ to enter this site',
     subheaderText: 'This website contains adult material and is only suitable for those {{age}} years or older. Click Enter only if you are at least {{age}} years of age.',
+    enterButtonText: 'ENTER',
+    exitButtonText: 'EXIT',
     exitButton: true,
     exitButtonColor: {
       hue: 0,
@@ -147,6 +149,8 @@ class Index extends React.Component {
       redirectUrl,
       headerText,
       subheaderText,
+      enterButtonText,
+      exitButtonText,
       exitButton,
       exitButtonColor,
       showToast,
@@ -375,6 +379,24 @@ class Index extends React.Component {
 
             <Card sectioned>
               <Heading>Buttons</Heading>
+              
+              <p>Enter Button Text:</p>
+              <TextField
+                value={enterButtonText}
+                onChange={this.#handleChange('enterButtonText')}
+                type="text"
+              />
+              <br />
+
+              <p>Exit Button Text:</p>
+              <TextField
+                value={exitButtonText}
+                onChange={this.#handleChange('exitButtonText')}
+                type="text"
+                multiline="false"
+              />
+              <br />
+              
               <SettingToggle
                 action={{
                   content: exitButtonStatus,
@@ -384,11 +406,14 @@ class Index extends React.Component {
               >
                 The exit link is displayed as <TextStyle variation="strong">{exitButtonTextStatus}</TextStyle> 
               </SettingToggle>
+
               { exitButton &&
-                <Layout.Section>
-                  <p>Exit Button Background Color:</p>
-                  <ColorPicker onChange={this.#handleChange('exitButtonColor')} color={exitButtonColor} />
-                </Layout.Section>
+                <div>
+                  <Layout.Section>
+                    <p>Exit Button Background Color:</p>
+                    <ColorPicker onChange={this.#handleChange('exitButtonColor')} color={exitButtonColor} />
+                  </Layout.Section>
+                </div>
               }
             </Card>
           </Layout.AnnotatedSection>
