@@ -24,6 +24,7 @@ class Index extends React.Component {
     rememberDays: 14,
     requireDOB: false,
     backgroundUrl: 'none',
+    transparentModal: false,
     logoUrl: 'none',
     redirectUrl: 'http://google.com',
     headerText: 'You must be {{age}}+ to enter this site',
@@ -145,6 +146,7 @@ class Index extends React.Component {
       rememberDays,
       requireDOB,
       backgroundUrl,
+      transparentModal,
       logoUrl,
       redirectUrl,
       headerText,
@@ -160,8 +162,12 @@ class Index extends React.Component {
 
     const shopOrigin = Cookies.get('shopOrigin');
 
+    const modalBackgroundStatus = transparentModal ? 'Add Background' : 'Remove Background';
+    const modalBackgroundTextStatus = transparentModal ? 'does not' : 'does';
+
     const dobStatus = requireDOB ? 'Disable' : 'Enable';
     const dobTextStatus = requireDOB ? 'enabled' : 'disabled';
+    
     const exitButtonStatus = exitButton ? 'Disable' : 'Enable';
     const exitButtonTextStatus = exitButton ? 'a button' : 'text';
 
@@ -330,6 +336,19 @@ class Index extends React.Component {
             </Card>
 
             <Card sectioned>
+              <Heading>Modal Background</Heading>
+              <SettingToggle
+                action={{
+                  content: modalBackgroundStatus,
+                  onAction: this.#handleSwitch('transparentModal'),
+                }}
+                enabled={transparentModal}
+              >
+                The modal popup <TextStyle variation="strong">{modalBackgroundTextStatus}</TextStyle> have a background.
+              </SettingToggle>
+            </Card>
+            
+            <Card sectioned>
               <Heading>Logo</Heading>
               <TextField
                 label="Display your logo as part of the overlay. Leave as 'none' for no logo."
@@ -396,7 +415,7 @@ class Index extends React.Component {
                 multiline="false"
               />
               <br />
-              
+
               <SettingToggle
                 action={{
                   content: exitButtonStatus,

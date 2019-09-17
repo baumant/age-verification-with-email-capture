@@ -162,6 +162,10 @@ async function checkVariables(ctx, next) {
       const afterBackgroundUrlVariablePos = ageGateLiquid.indexOf('" %}<!-- backgroundUrl -->');
       let backgroundVariable = ageGateLiquid.slice(backgroundUrlVariablePos+17, afterBackgroundUrlVariablePos);
 
+      const transparentModalPos = ageGateLiquid.indexOf('assign transparentModal = ');
+      const afterTransparentModalPos = ageGateLiquid.indexOf(' %}<!-- transparentModal -->');
+      let transparentModalVariable = ageGateLiquid.slice(transparentModalPos+26, afterTransparentModalPos);
+
       const logoUrlVariablePos = ageGateLiquid.indexOf('assign logoUrl = "');
       const afterLogoUrlVariablePos = ageGateLiquid.indexOf('" %}<!-- logoUrl -->');
       let logoVariable = ageGateLiquid.slice(logoUrlVariablePos+18, afterLogoUrlVariablePos);
@@ -197,6 +201,7 @@ async function checkVariables(ctx, next) {
         'rememberDays': rememberVariable,
         'requireDOB': dobVariable,
         'backgroundUrl': backgroundVariable,
+        'transparentModal': transparentModalVariable,
         'logoUrl': logoVariable,
         'redirectUrl': redirectVariable,
         'headerText': headingVariable,
@@ -300,8 +305,12 @@ async function updateAgeGate (ctx, next) {
       const exitButtonTextPos = addEnterText.indexOf('assign exitButtonText = "');
       const afterExitButtonTextPos = addEnterText.indexOf('" %}<!-- exitButtonText -->');
       let addExitText = addEnterText.slice(0,exitButtonTextPos+25) + ctx.request.body.exitButtonText + addEnterText.slice(afterExitButtonTextPos);
+
+      const transparentModalPos = addExitText.indexOf('assign transparentModal = ');
+      const afterTransparentModalPos = addExitText.indexOf(' %}<!-- transparentModal -->');
+      let addTransparentModal = addExitText.slice(0,transparentModalPos+26) + ctx.request.body.transparentModal.toString() + addExitText.slice(afterTransparentModalPos);
       
-      return addExitText;
+      return addTransparentModal;
     })
     .catch((error) => console.log('error', error));
   console.log(updatedAgeGateLiquid);
