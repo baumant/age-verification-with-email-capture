@@ -190,11 +190,6 @@ async function checkVariables(ctx, next) {
       const afterExitButtonVariablePos = ageGateLiquid.indexOf(' %}<!-- exitButton -->');
       let exitVariable = ageGateLiquid.slice(exitButtonVariablePos+20, afterExitButtonVariablePos);
 
-      // const exitButtonColorVariablePos = addExit.indexOf('assign exitButtonColor = "hsl(');
-      // const afterExitButtonColorVariablePos = addExit.indexOf(')" %}<!-- exitButtonColor -->');
-      // const exitButtonColorHSL = ctx.request.body.exitButtonColor.hue + ', ' + (ctx.request.body.exitButtonColor.brightness*100) + '%, ' + (ctx.request.body.exitButtonColor.saturation*100) + '%';
-      // let newAgeGateLiquid = addExit.slice(0,exitButtonColorVariablePos+30) + exitButtonColorHSL + addExit.slice(afterExitButtonColorVariablePos);
-      
       // return newAgeGateLiquid;
       return { 
         'age': ageVariable,
@@ -293,14 +288,9 @@ async function updateAgeGate (ctx, next) {
       const afterExitButtonVariablePos = addSubheading.indexOf(' %}<!-- exitButton -->');
       let addExit = addSubheading.slice(0,exitButtonVariablePos+20) + ctx.request.body.exitButton + addSubheading.slice(afterExitButtonVariablePos);
 
-      const exitButtonColorVariablePos = addExit.indexOf('assign exitButtonColor = "hsl(');
-      const afterExitButtonColorVariablePos = addExit.indexOf(')" %}<!-- exitButtonColor -->');
-      const exitButtonColorHSL = ctx.request.body.exitButtonColor.hue + ', ' + (ctx.request.body.exitButtonColor.brightness*100) + '%, ' + (ctx.request.body.exitButtonColor.saturation*100) + '%';
-      let addExitColor = addExit.slice(0,exitButtonColorVariablePos+30) + exitButtonColorHSL + addExit.slice(afterExitButtonColorVariablePos);
-
-      const enterButtonTextPos = addExitColor.indexOf('assign enterButtonText = "');
-      const afterEnterButtonTextPos = addExitColor.indexOf('" %}<!-- enterButtonText -->');
-      let addEnterText = addExitColor.slice(0,enterButtonTextPos+26) + ctx.request.body.enterButtonText + addExitColor.slice(afterEnterButtonTextPos);
+      const enterButtonTextPos = addExit.indexOf('assign enterButtonText = "');
+      const afterEnterButtonTextPos = addExit.indexOf('" %}<!-- enterButtonText -->');
+      let addEnterText = addExit.slice(0,enterButtonTextPos+26) + ctx.request.body.enterButtonText + addExit.slice(afterEnterButtonTextPos);
 
       const exitButtonTextPos = addEnterText.indexOf('assign exitButtonText = "');
       const afterExitButtonTextPos = addEnterText.indexOf('" %}<!-- exitButtonText -->');

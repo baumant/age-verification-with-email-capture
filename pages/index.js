@@ -32,11 +32,6 @@ class Index extends React.Component {
     enterButtonText: 'ENTER',
     exitButtonText: 'EXIT',
     exitButton: true,
-    exitButtonColor: {
-      hue: 0,
-      brightness: .9,
-      saturation: .6,
-    },
     showToast: false,
     showError: false,
     errorMessage: '',
@@ -154,7 +149,6 @@ class Index extends React.Component {
       enterButtonText,
       exitButtonText,
       exitButton,
-      exitButtonColor,
       showToast,
       showError,
       errorMessage,
@@ -425,15 +419,6 @@ class Index extends React.Component {
               >
                 The exit link is displayed as <TextStyle variation="strong">{exitButtonTextStatus}</TextStyle> 
               </SettingToggle>
-
-              { exitButton &&
-                <div>
-                  <Layout.Section>
-                    <p>Exit Button Background Color:</p>
-                    <ColorPicker onChange={this.#handleChange('exitButtonColor')} color={exitButtonColor} />
-                  </Layout.Section>
-                </div>
-              }
             </Card>
           </Layout.AnnotatedSection>
         </Layout>

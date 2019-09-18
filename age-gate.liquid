@@ -24,8 +24,6 @@
 
 {% assign exitButton = true %}<!-- exitButton -->
 
-{% assign exitButtonColor = "hsl(0,90%,60%)" %}<!-- exitButtonColor -->
-
 <div id="prompt-background">
   <div id="age-check-prompt" class="modal-prompt {% if transparentModal %}no-background{% endif %}">
     {% if logoUrl != 'none' %}
@@ -215,7 +213,7 @@
       <div style="clear:both; margin-bottom:15px"></div>
     </div>
     <button id="submit_birthdate" class="button-enter btn styled-submit" onclick="ageCheck()" style="display:inline-block;">{{enterButtonText}}</button> 
-    <a href="{{ redirectUrl }}" id="button-exit" {% if exitButton %}class="btn" style="background-color:{{exitButtonColor}}"{% endif %} name="button-exit">{{exitButtonText}}</a>
+    <a href="{{ redirectUrl }}" id="button-exit" {% if exitButton %}class="btn"{% endif %} name="button-exit">{{exitButtonText}}</a>
   </div>
 </div>
 
