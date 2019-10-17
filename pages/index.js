@@ -40,36 +40,29 @@ class Index extends React.Component {
   componentDidMount() {
     let cooks = Cookies.get();
     let currentVariables;
-    if(cooks.ageGateVariables){
-      console.log('variables in cookies');
-      currentVariables = JSON.parse(cooks.ageGateVariables);
-      Object.keys(currentVariables).map(i => {
-        this.setState({ [i]: currentVariables[i]});
-      })
-      console.log(this.state);
-    }
-    else {
-      fetch('/checkVariables', {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        method: 'GET'
-      })
-        .then(response => {
-          // response.json()
-          cooks = Cookies.get();
-          currentVariables = JSON.parse(cooks.ageGateVariables);
-          console.log('checkVariables response:', response, currentVariables);
-          Object.keys(currentVariables).map(i => {
-            this.setState({ [i]: currentVariables[i]});
-          })
+    
+    // check variables in age-gate.liquid
+    fetch('/checkVariables', {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      method: 'GET'
+    })
+      .then(response => {
+        // response.json()
+        cooks = Cookies.get();
+        currentVariables = JSON.parse(cooks.ageGateVariables);
+        console.log('checkVariables response:', response, currentVariables);
+        Object.keys(currentVariables).map(i => {
+          this.setState({ [i]: currentVariables[i]});
         })
-        .catch(function(error) {
-          console.log('error: ', error);
-          // Perform action based on error
-          
-        });
-    }
+      })
+      .catch(function(error) {
+        console.log('error: ', error);
+        // Perform action based on error
+
+      });
+    
   }
 
   #handleChange = (field) => {
