@@ -190,6 +190,10 @@ async function checkVariables(ctx, next) {
       const afterExitButtonVariablePos = ageGateLiquid.indexOf(' %}<!-- exitButton -->');
       let exitVariable = ageGateLiquid.slice(exitButtonVariablePos+20, afterExitButtonVariablePos);
 
+      const emailCaptureVariablePos = ageGateLiquid.indexOf('assign isEmailCapture = ');
+      const afterEmailCaptureVariablePos = ageGateLiquid.indexOf(' %}<!-- isEmailCapture -->');
+      let emailCaptureVariable = ageGateLiquid.slice(emailCaptureVariablePos+24, afterEmailCaptureVariablePos);
+
       // return newAgeGateLiquid;
       return { 
         'age': ageVariable,
@@ -204,6 +208,7 @@ async function checkVariables(ctx, next) {
         'enterButtonText': enterButtonText,
         'exitButtonText': exitButtonText,
         'exitButton': exitVariable,
+        'isEmailCapture': emailCaptureVariable,
       };
     })
     .catch((error) => console.log('error', error));
@@ -299,8 +304,12 @@ async function updateAgeGate (ctx, next) {
       const transparentModalPos = addExitText.indexOf('assign transparentModal = ');
       const afterTransparentModalPos = addExitText.indexOf(' %}<!-- transparentModal -->');
       let addTransparentModal = addExitText.slice(0,transparentModalPos+26) + ctx.request.body.transparentModal.toString() + addExitText.slice(afterTransparentModalPos);
-      
-      return addTransparentModal;
+
+      const emailCapturePos = addTransparentModal.indexOf('assign isEmailCapture = ');
+      const afterEmailCapturePos = addTransparentModal.indexOf(' %}<!-- isEmailCapture -->');
+      let addEmailCapture = addTransparentModal.slice(0,emailCapturePos+24) + ctx.request.body.isEmailCapture.toString() + addTransparentModal.slice(afterEmailCapturePos);
+
+      return addEmailCapture;
     })
     .catch((error) => console.log('error', error));
   console.log(updatedAgeGateLiquid);
