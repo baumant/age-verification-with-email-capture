@@ -1,6 +1,9 @@
 import App from 'next/app';
 import Head from 'next/head';
-import { AppProvider } from '@shopify/polaris';
+import { 
+  AppProvider,
+  Spinner
+} from '@shopify/polaris';
 import '@shopify/polaris/styles.css';
 import Cookies from 'js-cookie';
 
@@ -13,7 +16,19 @@ class MyApp extends App {
     const { Component, pageProps } = this.props;
     if (this.state.shopOrigin == undefined) {
       return (
-        <p>Loading age gate...</p>
+        <React.Fragment>
+          <Head>
+            <title>Age Gate</title>
+            <meta charSet="utf-8" />
+            </Head>
+            <AppProvider
+              shopOrigin={this.state.shopOrigin}
+              apiKey={API_KEY}
+              forceRedirect
+            >
+              <Spinner accessibilityLabel="Spinner example" size="large" color="inkLightest" />
+            </AppProvider>
+        </React.Fragment>
       )  
     } else {
       return (
