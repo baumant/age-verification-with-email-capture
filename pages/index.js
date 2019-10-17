@@ -14,7 +14,6 @@ import {
   Card,
   Heading,
   Subheading,
-  ColorPicker,
 } from '@shopify/polaris';
 import Cookies from 'js-cookie';
 
@@ -32,6 +31,7 @@ class Index extends React.Component {
     enterButtonText: 'ENTER',
     exitButtonText: 'EXIT',
     exitButton: true,
+    isEmailCapture: true,
     showToast: false,
     showError: false,
     errorMessage: '',
@@ -149,6 +149,7 @@ class Index extends React.Component {
       enterButtonText,
       exitButtonText,
       exitButton,
+      isEmailCapture,
       showToast,
       showError,
       errorMessage,
@@ -164,6 +165,9 @@ class Index extends React.Component {
     
     const exitButtonStatus = exitButton ? 'Disable' : 'Enable';
     const exitButtonTextStatus = exitButton ? 'a button' : 'text';
+
+    const emailcaptureStatus = isEmailCapture ? 'Disable' : 'Enable';
+    const emailcaptureTextStatus = isEmailCapture ? 'enabled' : 'disabled';
 
     const urlFieldPattern = "^(http:\\/\\/www\\.|https:\\/\\/www\\.|http:\\/\\/|https:\\/\\/)[a-z0-9]+([\\-\\.]{1}[a-z0-9]+)*\\.[a-z]{2,5}(:[0-9]{1,5})?(\\/.*)?$";
 
@@ -262,7 +266,7 @@ class Index extends React.Component {
                 error={this.#isInvalid(backgroundUrl, urlFieldPattern, 'backgroundUrl')}
                 prefix="image url:"
               />
-              <div className="Polaris-Labelled__HelpText">You can upload images in <a href={"https://" + shopOrigin + "/admin/settings/files"}>Settings > Files</a></div>
+              <div className="Polaris-Labelled__HelpText">You can upload images in <a target="_parent" href={"https://" + shopOrigin + "/admin/settings/files"}>Settings > Files</a></div>
               <InlineError
                 message={
                   (this.#isInvalid(backgroundUrl, urlFieldPattern, 'backgroundUrl')) ? "Invalid url. Make sure to include http:// or https://" : ""
@@ -353,7 +357,7 @@ class Index extends React.Component {
                 error={this.#isInvalid(logoUrl, urlFieldPattern, 'logoUrl')}
                 prefix="image url:"
               />
-              <div className="Polaris-Labelled__HelpText">You can upload images in <a href={"https://" + shopOrigin + "/admin/settings/files"}>Settings > Files</a></div>
+              <div className="Polaris-Labelled__HelpText">You can upload images in <a target="_parent" href={"https://" + shopOrigin + "/admin/settings/files"}>Settings > Files</a></div>
               <InlineError
                 message={
                   (this.#isInvalid(logoUrl, urlFieldPattern, 'logoUrl')) ? "Invalid url. Make sure to include http:// or https://" : ""
@@ -421,6 +425,25 @@ class Index extends React.Component {
               </SettingToggle>
             </Card>
           </Layout.AnnotatedSection>
+          <Layout.AnnotatedSection
+            title="Email Capture"
+            description="This will ask the user to sign up for your email list after confirming their age."
+          >
+            <SettingToggle
+              action={{
+                content: emailcaptureStatus,
+                onAction: this.#handleSwitch('isEmailCapture'),
+              }}
+              enabled={isEmailCapture}
+            >
+              Email capture is <TextStyle variation="strong">{emailcaptureTextStatus}</TextStyle>.
+            </SettingToggle>
+
+            { isEmailCapture &&
+              <p>email is being captured</p>
+            }
+          </Layout.AnnotatedSection>
+
         </Layout>
         {errorMarkup}
         <PageActions
