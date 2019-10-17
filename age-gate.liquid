@@ -24,6 +24,8 @@
 
 {% assign exitButton = true %}<!-- exitButton -->
 
+{% assign isEmailCapture = true %}<!-- isEmailCapture -->
+
 <div id="prompt-background">
   <div id="age-check-prompt" class="modal-prompt {% if transparentModal %}no-background{% endif %}">
     {% if logoUrl != 'none' %}
@@ -215,9 +217,61 @@
     <button id="submit_birthdate" class="button-enter btn styled-submit" onclick="ageCheck()" style="display:inline-block;">{{enterButtonText}}</button> 
     <a href="{{ redirectUrl }}" id="button-exit" {% if exitButton %}class="btn"{% endif %} name="button-exit">{{exitButtonText}}</a>
   </div>
+  {% if isEmailCapture == 'true' %}
+    {% if logoUrl != 'none' %}
+      <img src="{{logoUrl}}" id="age-verification-logo" alt="logo">
+    {% endif %}
+    <div id="age-verification-email-capture">
+      <img src="https://cdn.shopify.com/s/files/1/0249/5761/6206/files/icon-times.svg?621" alt="" id="ec-close">
+      <div class="ec-info">
+        <p class="ec-title">STAY UP TO DATE</p>
+        <p class="ec-text">Submit your email to get updates on Island products and special promotions.</p>
+      </div>
+      <form class="ec-form">
+        <input type="email"
+          name="contact[email]"
+          id="Contact_form-email"
+          class="input-group__field{% if form.errors %} input--error{% endif %}"
+          value=""
+          placeholder="Email"
+          aria-label="Email"
+          aria-required="true"
+          autocorrect="off"
+          autocapitalize="off"
+          >
+            <span class="input-group__btn">
+              <button type="submit" class="btn" name="commit" id="Subscribe">
+                <span><img src="https://cdn.shopify.com/s/files/1/0249/5761/6206/files/White.svg" alt=""></span>
+              </button>
+            </span>
+          </div>
+        
+      </form>
+    </div>
+  {% endif %}
 </div>
 
 <script>
+// hide age check after it fades out, fade in email capture
+document.getElementById('prompt-background').addEventListener('transitionend', function(e) {
+  if (e.target == document.getElementById('prompt-background') && (e.propertyName === 'height')) {
+    document.getElementById('age-check-prompt').style.display = 'none';
+    var emailCapture = document.getElementById('age-verification-email-capture');
+    emailCapture.style.display = 'flex';
+    setTimeout(function(){ 
+      emailCapture.style.opacity = 1;
+      emailCapture.style.paddingTop = '0px';
+    }, 300);
+  }
+});
+// close email capture functions
+document.getElementById('ec-close').addEventListener('click', function(e) {
+  document.getElementById('prompt-background').style.height = '0%';
+  setTimeout(function(){ 
+    document.getElementById('prompt-background').style.display = 'none';
+  }, 350);
+});
+
  function ageCheck() {
    var min_age = {{ age }};
    var year =   parseInt(document.getElementById('byear').value);
@@ -232,8 +286,13 @@
      var date = new Date();
      date.setTime(date.getTime()+(days*24*60*60*1000));
      var expires = "; expires="+date.toGMTString();
-     document.cookie = 'twentyone=true;'+expires+"; path=/";
-     location.reload();
+     if( {{ isEmailCapture }} ){
+      document.getElementById('prompt-background').classList.add('ec-height');
+      document.getElementById('age-check-prompt').style.opacity = 0;
+      document.getElementById('age-verification-logo').style.opacity = 0;
+    } else {
+      location.reload();
+    }
    };
   };
 
