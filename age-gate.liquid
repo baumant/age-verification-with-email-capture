@@ -217,38 +217,36 @@
     <button id="submit_birthdate" class="button-enter btn styled-submit" onclick="ageCheck()" style="display:inline-block;">{{enterButtonText}}</button> 
     <a href="{{ redirectUrl }}" id="button-exit" {% if exitButton %}class="btn"{% endif %} name="button-exit">{{exitButtonText}}</a>
   </div>
-  {% if isEmailCapture == 'true' %}
-    {% if logoUrl != 'none' %}
-      <img src="{{logoUrl}}" id="age-verification-logo" alt="logo">
-    {% endif %}
-    <div id="age-verification-email-capture">
-      <img src="https://cdn.shopify.com/s/files/1/0249/5761/6206/files/icon-times.svg?621" alt="" id="ec-close">
-      <div class="ec-info">
-        <p class="ec-title">STAY UP TO DATE</p>
-        <p class="ec-text">Submit your email to get updates on Island products and special promotions.</p>
-      </div>
-      <form class="ec-form">
-        <input type="email"
-          name="contact[email]"
-          id="Contact_form-email"
-          class="input-group__field{% if form.errors %} input--error{% endif %}"
-          value=""
-          placeholder="Email"
-          aria-label="Email"
-          aria-required="true"
-          autocorrect="off"
-          autocapitalize="off"
-          >
-            <span class="input-group__btn">
-              <button type="submit" class="btn" name="commit" id="Subscribe">
-                <span><img src="https://cdn.shopify.com/s/files/1/0249/5761/6206/files/White.svg" alt=""></span>
-              </button>
-            </span>
-          </div>
-        
-      </form>
-    </div>
+  {% if logoUrl != 'none' %}
+    <img src="{{logoUrl}}" id="age-verification-logo" alt="logo">
   {% endif %}
+  <div id="age-verification-email-capture">
+    <img src="https://cdn.shopify.com/s/files/1/0249/5761/6206/files/icon-times.svg?621" alt="" id="ec-close">
+    <div class="ec-info">
+      <p class="ec-title">EC TITLE</p>
+      <p class="ec-text">EC TEXT</p>
+    </div>
+    <form class="ec-form">
+      <input type="email"
+        name="contact[email]"
+        id="Contact_form-email"
+        class="input-group__field{% if form.errors %} input--error{% endif %}"
+        value=""
+        placeholder="Email"
+        aria-label="Email"
+        aria-required="true"
+        autocorrect="off"
+        autocapitalize="off"
+        >
+          <span class="input-group__btn">
+            <button type="submit" class="btn" name="commit" id="Subscribe">
+              <span><img src="https://cdn.shopify.com/s/files/1/0249/5761/6206/files/White.svg" alt=""></span>
+            </button>
+          </span>
+        </div>
+      
+    </form>
+  </div>
 </div>
 
 <script>
@@ -286,10 +284,14 @@ document.getElementById('ec-close').addEventListener('click', function(e) {
      var date = new Date();
      date.setTime(date.getTime()+(days*24*60*60*1000));
      var expires = "; expires="+date.toGMTString();
-     if( {{ isEmailCapture }} ){
+     document.cookie = 'twentyone=true;'+expires+"; path=/";
+     
+    if( {{ isEmailCapture }} ){
       document.getElementById('prompt-background').classList.add('ec-height');
       document.getElementById('age-check-prompt').style.opacity = 0;
-      document.getElementById('age-verification-logo').style.opacity = 0;
+      if(document.getElementById('age-verification-logo') != null){
+        document.getElementById('age-verification-logo').style.opacity = 0;
+      }
     } else {
       location.reload();
     }
@@ -315,7 +317,18 @@ document.getElementById('ec-close').addEventListener('click', function(e) {
 </script>
 
 <style>
-
+#age-verification-logo{
+  position: absolute;
+  bottom: 7%;
+  right: 7%;
+  opacity: 1;
+  transition: opacity 0.3s ease-in-out;
+}
+@media screen and (max-width: 768px){
+  #age-verification-logo{
+    right: calc(90% - 56px);
+  }
+}
 .modal-prompt {
   background: #fff;
   border-radius: 2px;
@@ -326,19 +339,28 @@ document.getElementById('ec-close').addEventListener('click', function(e) {
   padding: 20px 30px 30px 30px;
   position: relative;
   z-index: 1000000;
+  opacity: 1;
+  transition: opacity 0.3s ease-in;
+}
+@media screen and (max-width: 768px){
+  .modal-prompt{
+    width: 80%;
+    margin: 0 auto;
+    padding: 10px;
+  }
 }
 .modal-prompt.no-background{
   background: transparent;
   box-shadow: none;
 }
+@media screen and (max-width: 768px){
+  .modal-prompt.no-background{
+    padding: 0;
+  }
+}
 .ag-dob-select{
   display: flex;
   margin-bottom:20px;
-}
-@media screen and (max-width: 768px){
-  .modal-prompt{
-    width: 90%;
-  }
 }
 @media screen and (max-width: 500px){
   .ag-dob-select select{
@@ -357,12 +379,61 @@ document.getElementById('ec-close').addEventListener('click', function(e) {
   height: 100%;
   position: fixed;
   left: 0;
-  top: 0;
+  bottom: 0;
   z-index: 9999999;
   display: flex;
   align-items: center;
+  transition:height 0.3s linear;
+}
+#prompt-background.ec-height{
+  height: 20%;
+}
+@media screen and (max-width: 768px){
+  #prompt-background.ec-height{
+    height: 40%;
+    align-items: stretch;
+  }
 }
   
 .modal-prompt select { float: left; margin-right: 10px; }
+  
+#age-verification-email-capture{
+  width: 100%;
+  justify-content: space-around;
+  align-items: center;
+  display: none;
+  opacity: 0;
+  padding-top: 30px;
+  transition: all 0.3s ease-in-out;
+  position: relative;
+}
+@media screen and (max-width: 768px){
+  #age-verification-email-capture{
+    flex-wrap: wrap;
+  }
+}
+#age-verification-email-capture #ec-close{
+  position: absolute;
+  top: -10px;
+  right: 15px;
+  cursor: pointer;
+}
+@media screen and (max-width: 768px){
+  #age-verification-email-capture #ec-close{
+    top: 0;
+    position: relative;
+    display: block;
+    margin: 10px 0 0 100%;
+  }
+}
+#age-verification-email-capture .ec-info{
+  max-width: 50%;
+}
+@media screen and (max-width: 768px){
+  #age-verification-email-capture .ec-info, #age-verification-email-capture .ec-form{
+    max-width: 90%;
+    margin: 10px 0;
+  }
+}
 
 </style>
