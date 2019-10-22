@@ -32,6 +32,8 @@ class Index extends React.Component {
     exitButtonText: 'EXIT',
     exitButton: true,
     isEmailCapture: true,
+    ecTitle: 'STAY UP TO DATE',
+    ecText: 'Submit your email to get updates on Island products and special promotions.',
     showToast: false,
     showError: false,
     errorMessage: '',
@@ -143,6 +145,8 @@ class Index extends React.Component {
       exitButtonText,
       exitButton,
       isEmailCapture,
+      ecTitle,
+      ecText,
       showToast,
       showError,
       errorMessage,
@@ -433,7 +437,28 @@ class Index extends React.Component {
             </SettingToggle>
 
             { isEmailCapture &&
-              <p>email is being captured</p>
+              <Layout>
+                <Layout.Section>
+                  <Card sectioned>
+                    <Heading>Email Capture section title text</Heading>
+                    <TextField
+                      value={ecTitle}
+                      onChange={this.#handleChange('ecTitle')}
+                      type="text"
+                      helpText="Leave blank for no title"
+                    />
+                  </Card>
+                  <Card sectioned>
+                    <Heading>Email Capture section subtitle text</Heading>
+                    <TextField
+                      value={ecText}
+                      onChange={this.#handleChange('ecText')}
+                      type="text"
+                      helpText="Leave blank for no subtitle"
+                    />
+                  </Card>
+                </Layout.Section>
+              </Layout>
             }
           </Layout.AnnotatedSection>
 

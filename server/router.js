@@ -194,6 +194,14 @@ async function checkVariables(ctx, next) {
       const afterEmailCaptureVariablePos = ageGateLiquid.indexOf(' %}<!-- isEmailCapture -->');
       let emailCaptureVariable = ageGateLiquid.slice(emailCaptureVariablePos+24, afterEmailCaptureVariablePos);
 
+      const ecTitleVarPos = ageGateLiquid.indexOf('capture ec_title %}');
+      const afterECTitleVarPos = ageGateLiquid.indexOf('{% endcapture %}<!-- ec_title -->');
+      let ecTitleVariable = ageGateLiquid.slice(ecTitleVarPos+19, afterECTitleVarPos);
+
+      const ecTextVarPos = ageGateLiquid.indexOf('capture ec_text %}');
+      const afterECTextVarPos = ageGateLiquid.indexOf('{% endcapture %}<!-- ec_text -->');
+      let ecTextVariable = ageGateLiquid.slice(ecTextVarPos+18, afterECTextVarPos);
+
       // return newAgeGateLiquid;
       return { 
         'age': ageVariable,
@@ -209,6 +217,8 @@ async function checkVariables(ctx, next) {
         'exitButtonText': exitButtonText,
         'exitButton': exitVariable,
         'isEmailCapture': emailCaptureVariable,
+        'ecTitle': ecTitleVariable,
+        'ecText': ecTextVariable,
       };
     })
     .catch((error) => console.log('error', error));
@@ -309,7 +319,15 @@ async function updateAgeGate (ctx, next) {
       const afterEmailCapturePos = addTransparentModal.indexOf(' %}<!-- isEmailCapture -->');
       let addEmailCapture = addTransparentModal.slice(0,emailCapturePos+24) + ctx.request.body.isEmailCapture.toString() + addTransparentModal.slice(afterEmailCapturePos);
 
-      return addEmailCapture;
+      const ecTitlePos = addEmailCapture.indexOf('capture ec_title %}');
+      const afterECTitlePos = addEmailCapture.indexOf('{% endcapture %}<!-- ec_title -->');
+      let addECTitle = addEmailCapture.slice(0,ecTitlePos+19) + ctx.request.body.ecTitle + addEmailCapture.slice(afterECTitlePos);
+
+      const ecTextPos = addECTitle.indexOf('capture ec_text %}');
+      const afterECTextPos = addECTitle.indexOf('{% endcapture %}<!-- ec_text -->');
+      let addECText = addECTitle.slice(0,ecTextPos+18) + ctx.request.body.ecText + addECTitle.slice(afterECTextPos);
+
+      return addECText;
     })
     .catch((error) => console.log('error', error));
   console.log(updatedAgeGateLiquid);
