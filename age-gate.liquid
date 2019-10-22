@@ -26,6 +26,10 @@
 
 {% assign isEmailCapture = true %}<!-- isEmailCapture -->
 
+{% capture ec_title %}STAY UP TO DATE{% endcapture %}<!-- ec_title -->
+
+{% capture ec_text %}Submit your email to get updates on products and special promotions.{% endcapture %}<!-- ec_text -->
+
 <div id="prompt-background">
   <div id="age-check-prompt" class="modal-prompt {% if transparentModal %}no-background{% endif %}">
     {% if logoUrl != 'none' %}
@@ -223,29 +227,45 @@
   <div id="age-verification-email-capture">
     <img src="https://cdn.shopify.com/s/files/1/0249/5761/6206/files/icon-times.svg?621" alt="" id="ec-close">
     <div class="ec-info">
-      <p class="ec-title">EC TITLE</p>
-      <p class="ec-text">EC TEXT</p>
+      <h2 class="ec-title">{{ec_title}}</h2>
+      <p class="ec-text">{{ec_text}}</p>
     </div>
-    <form class="ec-form">
-      <input type="email"
-        name="contact[email]"
-        id="Contact_form-email"
-        class="input-group__field{% if form.errors %} input--error{% endif %}"
-        value=""
-        placeholder="Email"
-        aria-label="Email"
-        aria-required="true"
-        autocorrect="off"
-        autocapitalize="off"
-        >
-          <span class="input-group__btn">
-            <button type="submit" class="btn" name="commit" id="Subscribe">
-              <span><img src="https://cdn.shopify.com/s/files/1/0249/5761/6206/files/White.svg" alt=""></span>
-            </button>
-          </span>
-        </div>
-      
-    </form>
+    {% form 'customer', class: 'ec-form', novalidate: 'novalidate' %}
+      {%- if form.posted_successfully? -%}
+        <p class="form-message form-message--success" tabindex="-1" data-form-status>
+          {{ 'general.newsletter_form.confirmation' | t }}
+        </p>
+      {%- endif -%}
+      <input type="hidden" name="contact[tags]" value="newsletter">
+      <div class="input-group {% if form.errors %} input-group--error{% endif %}">
+        <input type="email"
+          name="contact[email]"
+          id="ec-form-email"
+          class="input-group__field newsletter__input{% if form.errors %} input--error{% endif %}"
+          value="{{ form.email }}"
+          placeholder="{{ 'general.newsletter_form.email_placeholder' | t }}"
+          aria-label="{{ 'general.newsletter_form.email_placeholder' | t }}"
+          aria-required="true"
+          required
+          autocorrect="off"
+          autocapitalize="off"
+          {% if form.errors %}
+            aria-invalid="true"
+            aria-describedby="ec-form-email-error"
+            data-form-status
+          {% endif %}>
+        <span class="input-group__btn">
+          <button type="submit" class="btn newsletter__submit" name="commit" id="Subscribe">
+            <span class="newsletter__submit-text--large">{{ 'general.newsletter_form.submit' | t }}</span>
+          </button>
+        </span>
+      </div>
+      {% if form.errors contains 'email' %}
+        <span id="ec-form-email-error" class="input-error-message">
+          {% include 'icon-error' %} {{ form.errors.translated_fields['email'] | capitalize }} {{ form.errors.messages['email'] }}.
+        </span>
+      {% endif %}
+    {% endform %}
   </div>
 </div>
 
@@ -270,49 +290,49 @@ document.getElementById('ec-close').addEventListener('click', function(e) {
   }, 350);
 });
 
- function ageCheck() {
-   var min_age = {{ age }};
-   var year =   parseInt(document.getElementById('byear').value);
-   var month =  parseInt(document.getElementById('bmonth').value);
-   var day =    parseInt(document.getElementById('bday').value);
-   var theirDate = new Date((year + min_age), month, day);
-   var today = new Date;
-   if ((today.getTime() - theirDate.getTime()) < 0) {
-     window.location = '{{ redirectUrl }}';
+function ageCheck() {
+  var min_age = {{ age }};
+  var year =   parseInt(document.getElementById('byear').value);
+  var month =  parseInt(document.getElementById('bmonth').value);
+  var day =    parseInt(document.getElementById('bday').value);
+  var theirDate = new Date((year + min_age), month, day);
+  var today = new Date;
+  if ((today.getTime() - theirDate.getTime()) < 0) {
+    window.location = '{{ redirectUrl }}';
+  } else {
+    var days = {{rememberDays}};
+    var date = new Date();
+    date.setTime(date.getTime()+(days*24*60*60*1000));
+    var expires = "; expires="+date.toGMTString();
+    document.cookie = 'twentyone=true;'+expires+"; path=/";
+    
+   if( {{ isEmailCapture }} ){
+     document.getElementById('prompt-background').classList.add('ec-height');
+     document.getElementById('age-check-prompt').style.opacity = 0;
+     if(document.getElementById('age-verification-logo') != null){
+       document.getElementById('age-verification-logo').style.opacity = 0;
+     }
    } else {
-     var days = {{rememberDays}};
-     var date = new Date();
-     date.setTime(date.getTime()+(days*24*60*60*1000));
-     var expires = "; expires="+date.toGMTString();
-     document.cookie = 'twentyone=true;'+expires+"; path=/";
-     
-    if( {{ isEmailCapture }} ){
-      document.getElementById('prompt-background').classList.add('ec-height');
-      document.getElementById('age-check-prompt').style.opacity = 0;
-      if(document.getElementById('age-verification-logo') != null){
-        document.getElementById('age-verification-logo').style.opacity = 0;
-      }
-    } else {
-      location.reload();
-    }
-   };
+     location.reload();
+   }
   };
+};
 
-  function readCookie(name) {
-    var nameEQ = name + "=";
-    var ca = document.cookie.split(';');
-    for(var i=0;i < ca.length;i++) {
-      var c = ca[i];
-      while (c.charAt(0)==' ') c = c.substring(1,c.length);
-      if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
-    }
-    return null;
-  };
+function readCookie(name) {
+  var nameEQ = name + "=";
+  var ca = document.cookie.split(';');
+  for(var i=0;i < ca.length;i++) {
+    var c = ca[i];
+    while (c.charAt(0)==' ') c = c.substring(1,c.length);
+    if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+  }
+  return null;
+};
 
-  var twentyone = readCookie('twentyone');
-  if (twentyone || {{dontShow}}) {
-    document.write("<style> #prompt-background { display: none !important; }</style>");
-  };
+var twentyone = readCookie('twentyone');
+if (twentyone || {{dontShow}}) {
+  document.write("<style> #prompt-background { display: none !important; }</style>");
+};
 
 </script>
 
@@ -428,6 +448,12 @@ document.getElementById('ec-close').addEventListener('click', function(e) {
 }
 #age-verification-email-capture .ec-info{
   max-width: 50%;
+}
+#age-verification-email-capture .ec-info .ec-text{
+  font-size: 24px;
+}
+#age-verification-email-capture .ec-form .input-group{
+  flex-wrap: nowrap;
 }
 @media screen and (max-width: 768px){
   #age-verification-email-capture .ec-info, #age-verification-email-capture .ec-form{
