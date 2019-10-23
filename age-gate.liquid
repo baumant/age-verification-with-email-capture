@@ -270,6 +270,9 @@
 </div>
 
 <script>
+//disallow scrolling on body when age gate is up
+document.body.className += ' ' + 'noscroll';
+
 // hide age check after it fades out, fade in email capture
 document.getElementById('prompt-background').addEventListener('transitionend', function(e) {
   if (e.target == document.getElementById('prompt-background') && (e.propertyName === 'height')) {
@@ -331,12 +334,17 @@ function readCookie(name) {
 
 var twentyone = readCookie('twentyone');
 if (twentyone || {{dontShow}}) {
+  // remove noscroll class if user is over 21, hide age gate
+  document.body.className = document.body.className.replace("noscroll","");
   document.write("<style> #prompt-background { display: none !important; }</style>");
 };
 
 </script>
 
 <style>
+body.noscroll {
+  overflow: hidden !important;
+}
 #age-verification-logo{
   position: absolute;
   bottom: 7%;
