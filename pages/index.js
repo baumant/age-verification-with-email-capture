@@ -14,6 +14,8 @@ import {
   Card,
   Heading,
   Subheading,
+  ColorPicker,
+  hsbToHex
 } from '@shopify/polaris';
 import Cookies from 'js-cookie';
 
@@ -34,6 +36,12 @@ class Index extends React.Component {
     isEmailCapture: true,
     ecTitle: 'STAY UP TO DATE',
     ecText: 'Submit your email to get updates on Island products and special promotions.',
+    ecTextColor: {
+      hue: 120,
+      brightness: 1,
+      saturation: 1,
+    },
+    ecTextColorHex: '#fffff',
     showToast: false,
     showError: false,
     errorMessage: '',
@@ -64,10 +72,12 @@ class Index extends React.Component {
         // Perform action based on error
 
       });
-    
   }
 
   #handleChange = (field) => {
+    if(field === 'ecTextColor'){
+      this.state['ecTextColorHex'] = hsbToHex(this.state[field]);
+    }
     return (value) => this.setState({[field]: value});
   };
 
@@ -147,6 +157,8 @@ class Index extends React.Component {
       isEmailCapture,
       ecTitle,
       ecText,
+      ecTextColor,
+      ecTextColorHex,
       showToast,
       showError,
       errorMessage,
@@ -456,6 +468,7 @@ class Index extends React.Component {
                       type="text"
                       helpText="Leave blank for no subtitle"
                     />
+                    <ColorPicker onChange={this.#handleChange('ecTextColor')} color={ecTextColor} />
                   </Card>
                 </Layout.Section>
               </Layout>
