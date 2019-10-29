@@ -6,6 +6,7 @@ import {
   Stack,
   Toast,
   Banner,
+  Button,
   SettingToggle,
   TextStyle,
   PageActions,
@@ -15,7 +16,8 @@ import {
   Heading,
   Subheading,
   ColorPicker,
-  hsbToHex
+  rgbToHsb,
+  hsbToRgb
 } from '@shopify/polaris';
 import Cookies from 'js-cookie';
 
@@ -37,14 +39,15 @@ class Index extends React.Component {
     ecTitle: 'STAY UP TO DATE',
     ecText: 'Submit your email to get updates on Island products and special promotions.',
     ecTextColor: {
-      hue: 120,
+      hue: 0,
       brightness: 1,
-      saturation: 1,
+      saturation: 0,
     },
-    ecTextColorHex: '#fffff',
+    ecTextColorRgb: 'rgb(255, 255, 255)',
     showToast: false,
     showError: false,
     errorMessage: '',
+    designMode: true
   };
 
   componentDidMount() {
@@ -63,9 +66,33 @@ class Index extends React.Component {
         cooks = Cookies.get();
         currentVariables = JSON.parse(cooks.ageGateVariables);
         console.log('checkVariables response:', response, currentVariables);
+        
+        // map current variables to state
         Object.keys(currentVariables).map(i => {
           this.setState({ [i]: currentVariables[i]});
-        })
+        });
+
+        // set colorpicker state from current variable rgb color
+        function rgbToObject(color) {
+          const colorMatch = color.match(/\(([^)]+)\)/);
+
+          if (!colorMatch) {
+            return {red: 0, green: 0, blue: 0, alpha: 0};
+          }
+
+          const [red, green, blue, alpha] = colorMatch[1].split(',');
+          const objColor = {
+            red: parseInt(red, 10),
+            green: parseInt(green, 10),
+            blue: parseInt(blue, 10),
+            alpha: parseInt(alpha, 10) || 1,
+          };
+          return objColor;
+        }
+        let rgbObject = rgbToObject(currentVariables['ecTextColorRgb']);
+        let hsbFromRgb = rgbToHsb(rgbObject);
+        this.state['ecTextColor'] = hsbFromRgb;
+        
       })
       .catch(function(error) {
         console.log('error: ', error);
@@ -76,7 +103,10 @@ class Index extends React.Component {
 
   #handleChange = (field) => {
     if(field === 'ecTextColor'){
-      this.state['ecTextColorHex'] = hsbToHex(this.state[field]);
+      const {hue, saturation, brightness} = this.state[field];
+      const {red, green, blue} = hsbToRgb({hue, saturation, brightness});
+      const colorString = `rgb(${red}, ${green}, ${blue})`;
+      this.state['ecTextColorRgb'] = colorString;
     }
     return (value) => this.setState({[field]: value});
   };
@@ -158,10 +188,11 @@ class Index extends React.Component {
       ecTitle,
       ecText,
       ecTextColor,
-      ecTextColorHex,
+      ecTextColorRgb,
       showToast,
       showError,
       errorMessage,
+      designMode
     } = this.state;
 
     const shopOrigin = Cookies.get('shopOrigin');
@@ -197,10 +228,40 @@ class Index extends React.Component {
       </Banner>
     ) : null;
 
+    const designmodeMarkup = designMode ? (
+      <Banner
+        title="You are in Design Mode, your browser wont remember you so when you refresh the page Age Gate will be visible again."
+        status="warning"
+        action={{
+          content: 'Turn Design Mode off',
+          onAction: this.#handleSwitch('designMode')
+        }}
+      ></Banner>
+    ) : null;
+
+    const designSectionDescription = designMode ? (
+      <p>Customize the design of the age gate. <br/>
+      <Button plain destructive
+        onClick={this.#handleSwitch('designMode')}
+      >
+        Turn off Design Mode
+      </Button>
+      </p>
+    ) : (
+      <p>Customize the design of the age gate. <br/>
+      <Button plain
+        onClick={this.#handleSwitch('designMode')}
+      >
+        Turn on Design Mode
+      </Button>
+      </p>
+    )
+
     return (
       <Page>
         <Layout>
           {toastMarkup}
+          {designmodeMarkup}
           <Layout.AnnotatedSection
             title="Age Restriction"
             description="The age required to enter."
@@ -223,6 +284,18 @@ class Index extends React.Component {
               type="number"
               suffix="days"
             />
+            { designMode && 
+              <Layout>
+                <Layout.Section>
+                  <div><TextStyle variation="strong">This will not take effect until Design Mode is turned off</TextStyle></div>
+                  <Button plain destructive
+                    onClick={this.#handleSwitch('designMode')}
+                  >
+                    Turn off Design Mode
+                  </Button>
+                </Layout.Section>
+              </Layout>
+            }
           </Layout.AnnotatedSection>
 
           <Layout.AnnotatedSection
@@ -262,8 +335,9 @@ class Index extends React.Component {
 
           <Layout.AnnotatedSection
             title="Design"
-            description="Customize the design of the age gate."
+            description={designSectionDescription}
           >
+             
             <Card sectioned>
               <Heading>Background Image</Heading>
               <TextField
@@ -468,7 +542,14 @@ class Index extends React.Component {
                       type="text"
                       helpText="Leave blank for no subtitle"
                     />
-                    <ColorPicker onChange={this.#handleChange('ecTextColor')} color={ecTextColor} />
+                    { ecText.length > 0 &&
+                      <Layout>
+                        <Layout.Section>
+                          <Subheading>Subtitle Text Color</Subheading>
+                          <ColorPicker onChange={this.#handleChange('ecTextColor')} color={ecTextColor} />
+                        </Layout.Section>
+                      </Layout> 
+                    }
                   </Card>
                 </Layout.Section>
               </Layout>

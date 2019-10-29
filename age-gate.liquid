@@ -30,6 +30,10 @@
 
 {% capture ec_text %}Submit your email to get updates on products and special promotions.{% endcapture %}<!-- ec_text -->
 
+{% assign ec_textcolor = "rgb(255, 255, 255)" %}<!-- ec_textcolor -->
+
+{% assign designMode = true %}<!-- designMode -->
+
 <div id="prompt-background">
   <div id="age-check-prompt" class="modal-prompt {% if transparentModal %}no-background{% endif %}">
     {% if logoUrl != 'none' %}
@@ -228,7 +232,7 @@
     <img src="https://cdn.shopify.com/s/files/1/0249/5761/6206/files/icon-times.svg?621" alt="" id="ec-close">
     <div class="ec-info">
       <h2 class="ec-title">{{ec_title}}</h2>
-      <p class="ec-text">{{ec_text}}</p>
+      <p class="ec-text" style="color:{{ ec_textcolor }}">{{ec_text}}</p>
     </div>
     {% form 'customer', class: 'ec-form', novalidate: 'novalidate' %}
       {%- if form.posted_successfully? -%}
@@ -307,7 +311,10 @@ function ageCheck() {
     var date = new Date();
     date.setTime(date.getTime()+(days*24*60*60*1000));
     var expires = "; expires="+date.toGMTString();
-    document.cookie = 'twentyone=true;'+expires+"; path=/";
+    if( {{designMode}} == false ){
+      document.cookie = 'twentyone=true;'+expires+"; path=/";
+    }
+    document.body.className = document.body.className.replace("noscroll","");
     
    if( {{ isEmailCapture }} ){
      document.getElementById('prompt-background').classList.add('ec-height');

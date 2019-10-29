@@ -152,7 +152,7 @@ async function checkVariables(ctx, next) {
       
       const dobVariablePos = ageGateLiquid.indexOf('enter_date_of_birth = ');
       const afterDOBVariablePos = ageGateLiquid.indexOf(' %}<!-- enter_date_of_birth -->');
-      let dobVariable = ageGateLiquid.slice(dobVariablePos+22, afterDOBVariablePos);
+      let dobVariable = (ageGateLiquid.slice(dobVariablePos+22, afterDOBVariablePos) == 'true');
 
       const redirectUrlVariablePos = ageGateLiquid.indexOf('redirectUrl = "');
       const afterRedirectUrlVariablePos = ageGateLiquid.indexOf('" %}<!-- redirectUrl -->');
@@ -164,7 +164,7 @@ async function checkVariables(ctx, next) {
 
       const transparentModalPos = ageGateLiquid.indexOf('assign transparentModal = ');
       const afterTransparentModalPos = ageGateLiquid.indexOf(' %}<!-- transparentModal -->');
-      let transparentModalVariable = ageGateLiquid.slice(transparentModalPos+26, afterTransparentModalPos);
+      let transparentModalVariable = (ageGateLiquid.slice(transparentModalPos+26, afterTransparentModalPos) == 'true');
 
       const logoUrlVariablePos = ageGateLiquid.indexOf('assign logoUrl = "');
       const afterLogoUrlVariablePos = ageGateLiquid.indexOf('" %}<!-- logoUrl -->');
@@ -188,11 +188,11 @@ async function checkVariables(ctx, next) {
 
       const exitButtonVariablePos = ageGateLiquid.indexOf('assign exitButton = ');
       const afterExitButtonVariablePos = ageGateLiquid.indexOf(' %}<!-- exitButton -->');
-      let exitVariable = ageGateLiquid.slice(exitButtonVariablePos+20, afterExitButtonVariablePos);
+      let exitVariable = (ageGateLiquid.slice(exitButtonVariablePos+20, afterExitButtonVariablePos) == 'true');
 
       const emailCaptureVariablePos = ageGateLiquid.indexOf('assign isEmailCapture = ');
       const afterEmailCaptureVariablePos = ageGateLiquid.indexOf(' %}<!-- isEmailCapture -->');
-      let emailCaptureVariable = ageGateLiquid.slice(emailCaptureVariablePos+24, afterEmailCaptureVariablePos);
+      let emailCaptureVariable = (ageGateLiquid.slice(emailCaptureVariablePos+24, afterEmailCaptureVariablePos) == 'true');
 
       const ecTitleVarPos = ageGateLiquid.indexOf('capture ec_title %}');
       const afterECTitleVarPos = ageGateLiquid.indexOf('{% endcapture %}<!-- ec_title -->');
@@ -201,6 +201,14 @@ async function checkVariables(ctx, next) {
       const ecTextVarPos = ageGateLiquid.indexOf('capture ec_text %}');
       const afterECTextVarPos = ageGateLiquid.indexOf('{% endcapture %}<!-- ec_text -->');
       let ecTextVariable = ageGateLiquid.slice(ecTextVarPos+18, afterECTextVarPos);
+
+      const ecTextcolorVarPos = ageGateLiquid.indexOf('assign ec_textcolor = "');
+      const afterECTextcolorVarPos = ageGateLiquid.indexOf('" %}<!-- ec_textcolor -->');
+      let ecTextcolorVariable = ageGateLiquid.slice(ecTextcolorVarPos+23, afterECTextcolorVarPos);
+
+      const designModeVarPos = ageGateLiquid.indexOf('assign designMode = ');
+      const afterDesignModeVarPos = ageGateLiquid.indexOf(' %}<!-- designMode -->');
+      let designModeVariable = (ageGateLiquid.slice(designModeVarPos+20, afterDesignModeVarPos) == 'true');
 
       // return newAgeGateLiquid;
       return { 
@@ -219,6 +227,8 @@ async function checkVariables(ctx, next) {
         'isEmailCapture': emailCaptureVariable,
         'ecTitle': ecTitleVariable,
         'ecText': ecTextVariable,
+        'ecTextColorRgb': ecTextcolorVariable,
+        'designMode': designModeVariable,
       };
     })
     .catch((error) => console.log('error', error));
@@ -327,7 +337,15 @@ async function updateAgeGate (ctx, next) {
       const afterECTextPos = addECTitle.indexOf('{% endcapture %}<!-- ec_text -->');
       let addECText = addECTitle.slice(0,ecTextPos+18) + ctx.request.body.ecText + addECTitle.slice(afterECTextPos);
 
-      return addECText;
+      const ecTextcolorPos = addECText.indexOf('assign ec_textcolor = "');
+      const afterECTextcolorPos = addECText.indexOf('" %}<!-- ec_textcolor -->');
+      let addECTextcolor = addECText.slice(0,ecTextcolorPos+23) + ctx.request.body.ecTextColorRgb + addECText.slice(afterECTextcolorPos);
+
+      const designModePos = addECTextcolor.indexOf('assign designMode = ');
+      const afterDesignModePos = addECTextcolor.indexOf(' %}<!-- designMode -->');
+      let addDesignMode = addECTextcolor.slice(0,designModePos+20) + ctx.request.body.designMode.toString() + addECTextcolor.slice(afterDesignModePos);
+
+      return addDesignMode;
     })
     .catch((error) => console.log('error', error));
   console.log(updatedAgeGateLiquid);
