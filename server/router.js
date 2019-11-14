@@ -198,6 +198,10 @@ async function checkVariables(ctx, next) {
       const afterECTitleVarPos = ageGateLiquid.indexOf('{% endcapture %}<!-- ec_title -->');
       let ecTitleVariable = ageGateLiquid.slice(ecTitleVarPos+19, afterECTitleVarPos);
 
+      const ecTitlecolorVarPos = ageGateLiquid.indexOf('assign ec_titlecolor = "');
+      const afterECTitlecolorVarPos = ageGateLiquid.indexOf('" %}<!-- ec_titlecolor -->');
+      let ecTitlecolorVariable = ageGateLiquid.slice(ecTitlecolorVarPos+24, afterECTitlecolorVarPos);
+
       const ecTextVarPos = ageGateLiquid.indexOf('capture ec_text %}');
       const afterECTextVarPos = ageGateLiquid.indexOf('{% endcapture %}<!-- ec_text -->');
       let ecTextVariable = ageGateLiquid.slice(ecTextVarPos+18, afterECTextVarPos);
@@ -226,6 +230,7 @@ async function checkVariables(ctx, next) {
         'exitButton': exitVariable,
         'isEmailCapture': emailCaptureVariable,
         'ecTitle': ecTitleVariable,
+        'ecTitleColorRgb': ecTitlecolorVariable,
         'ecText': ecTextVariable,
         'ecTextColorRgb': ecTextcolorVariable,
         'designMode': designModeVariable,
@@ -345,7 +350,11 @@ async function updateAgeGate (ctx, next) {
       const afterDesignModePos = addECTextcolor.indexOf(' %}<!-- designMode -->');
       let addDesignMode = addECTextcolor.slice(0,designModePos+20) + ctx.request.body.designMode.toString() + addECTextcolor.slice(afterDesignModePos);
 
-      return addDesignMode;
+      const ecTitlecolorPos = addDesignMode.indexOf('assign ec_titlecolor = "');
+      const afterECTitlecolorPos = addDesignMode.indexOf('" %}<!-- ec_titlecolor -->');
+      let addECTitlecolor = addDesignMode.slice(0,ecTitlecolorPos+24) + ctx.request.body.ecTitleColorRgb + addDesignMode.slice(afterECTitlecolorPos);
+
+      return addECTitlecolor;
     })
     .catch((error) => console.log('error', error));
   console.log(updatedAgeGateLiquid);

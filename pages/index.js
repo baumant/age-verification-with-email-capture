@@ -44,6 +44,12 @@ class Index extends React.Component {
       saturation: 0,
     },
     ecTextColorRgb: 'rgb(255, 255, 255)',
+    ecTitleColor: {
+      hue: 0,
+      brightness: 1,
+      saturation: 0,
+    },
+    ecTitleColorRgb: 'rgb(255, 255, 255)',
     showToast: false,
     showError: false,
     errorMessage: '',
@@ -89,10 +95,15 @@ class Index extends React.Component {
           };
           return objColor;
         }
+        // for ecTextColor
         let rgbObject = rgbToObject(currentVariables['ecTextColorRgb']);
         let hsbFromRgb = rgbToHsb(rgbObject);
         this.state['ecTextColor'] = hsbFromRgb;
-        
+
+        // for ecTitleColor
+        let ecTitleRGBObject = rgbToObject(currentVariables['ecTitleColorRgb']);
+        let ecTitleHSBFromRgb = rgbToHsb(ecTitleRGBObject);
+        this.state['ecTitleColor'] = ecTitleHSBFromRgb;        
       })
       .catch(function(error) {
         console.log('error: ', error);
@@ -107,6 +118,12 @@ class Index extends React.Component {
       const {red, green, blue} = hsbToRgb({hue, saturation, brightness});
       const colorString = `rgb(${red}, ${green}, ${blue})`;
       this.state['ecTextColorRgb'] = colorString;
+    }
+    if(field === 'ecTitleColor'){
+      const {hue, saturation, brightness} = this.state[field];
+      const {red, green, blue} = hsbToRgb({hue, saturation, brightness});
+      const colorString = `rgb(${red}, ${green}, ${blue})`;
+      this.state['ecTitleColorRgb'] = colorString;
     }
     return (value) => this.setState({[field]: value});
   };
@@ -189,6 +206,8 @@ class Index extends React.Component {
       ecText,
       ecTextColor,
       ecTextColorRgb,
+      ecTitleColor,
+      ecTitleColorRgb,
       showToast,
       showError,
       errorMessage,
@@ -533,6 +552,14 @@ class Index extends React.Component {
                       type="text"
                       helpText="Leave blank for no title"
                     />
+                    { ecTitle.length > 0 &&
+                      <Layout>
+                        <Layout.Section>
+                          <Subheading>Title Text Color</Subheading>
+                          <ColorPicker onChange={this.#handleChange('ecTitleColor')} color={ecTitleColor} />
+                        </Layout.Section>
+                      </Layout> 
+                    }
                   </Card>
                   <Card sectioned>
                     <Heading>Email Capture section subtitle text</Heading>

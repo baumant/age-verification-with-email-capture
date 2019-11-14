@@ -28,6 +28,8 @@
 
 {% capture ec_title %}STAY UP TO DATE{% endcapture %}<!-- ec_title -->
 
+{% assign ec_titlecolor = "rgb(255, 255, 255)" %}<!-- ec_titlecolor -->
+
 {% capture ec_text %}Submit your email to get updates on products and special promotions.{% endcapture %}<!-- ec_text -->
 
 {% assign ec_textcolor = "rgb(255, 255, 255)" %}<!-- ec_textcolor -->
@@ -228,7 +230,7 @@
   <div id="age-verification-email-capture">
     <img src="https://cdn.shopify.com/s/files/1/0249/5761/6206/files/icon-times.svg?621" alt="" id="ec-close">
     <div class="ec-info">
-      <h2 class="ec-title">{{ec_title}}</h2>
+      <h2 class="ec-title" style="color:{{ ec_titlecolor }}">{{ec_title}}</h2>
       <p class="ec-text" style="color:{{ ec_textcolor }}">{{ec_text}}</p>
     </div>
     {% form 'customer', class: 'ec-form', novalidate: 'novalidate' %}
