@@ -105,7 +105,7 @@ async function installAgeGate (ctx, next) {
         script_tag: {
           event: "onload",
           display_scope: "online_store",
-          src: "https://raw.githubusercontent.com/baumant/age-gate/master/age-gate.js"
+          src: "https://shopify-age-gate.herokuapp.com/age-gate.js"
         }
       })
       const scriptTagPostOptions = {

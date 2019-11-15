@@ -6,6 +6,7 @@ const { default: createShopifyAuth } = require('@shopify/koa-shopify-auth');
 const dotenv = require('dotenv');
 const { verifyRequest } = require('@shopify/koa-shopify-auth');
 const session = require('koa-session');
+const send = require('koa-send');
 
 dotenv.config();
 const Router = require('koa-router');
@@ -47,9 +48,13 @@ app.prepare().then(() => {
   );
     
   router.get('*', verifyRequest(), async (ctx) => {
-    await handle(ctx.req, ctx.res);
-    ctx.respond = false;
-    ctx.res.statusCode = 200;
+    if ('/age-gate.js' == ctx.path){
+     await send(ctx, 'public/age-gate.js'); 
+    } else {
+      await handle(ctx.req, ctx.res);
+      ctx.respond = false;
+      ctx.res.statusCode = 200;  
+    }
   });
   
   server.use(router.routes());
