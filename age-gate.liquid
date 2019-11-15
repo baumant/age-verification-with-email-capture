@@ -381,7 +381,7 @@ if (twentyone) {
   // remove noscroll class if user is over 21, hide age gate
   document.body.className = document.body.className.replace("noscroll","");
 
-  if( {{ isEmailCapture }} && emailcaptured == false ){
+  if( {{ isEmailCapture }} && emailcaptured == null ){
     document.getElementById('prompt-background').classList.add('ec-height');
     showEmailCapture();
   } else {
