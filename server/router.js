@@ -236,6 +236,14 @@ async function checkVariables(ctx, next) {
       const afterDesignModeVarPos = ageGateLiquid.indexOf(' %}<!-- designMode -->');
       let designModeVariable = (ageGateLiquid.slice(designModeVarPos+20, afterDesignModeVarPos) == 'true');
 
+      const overlayVarPos = ageGateLiquid.indexOf('assign backgroundOverlay = ');
+      const afterOverlayVarPos = ageGateLiquid.indexOf(' %}<!-- backgroundOverlay -->');
+      let overlayVariable = (ageGateLiquid.slice(overlayVarPos+27, afterOverlayVarPos) == 'true');
+
+      const overlayDarkVarPos = ageGateLiquid.indexOf('assign backgroundOverlayDark = ');
+      const afterOverlayDarkVarPos = ageGateLiquid.indexOf(' %}<!-- backgroundOverlayColor -->');
+      let overlayDarkVariable = (ageGateLiquid.slice(overlayDarkVarPos+31, afterOverlayDarkVarPos) == 'true');
+
       // return newAgeGateLiquid;
       return { 
         'age': ageVariable,
@@ -256,6 +264,8 @@ async function checkVariables(ctx, next) {
         'ecText': ecTextVariable,
         'ecTextColorRgb': ecTextcolorVariable,
         'designMode': designModeVariable,
+        'backgroundOverlay': overlayVariable,
+        'backgroundOverlayDark': overlayDarkVariable,
       };
     })
     .catch((error) => console.log('error', error));
@@ -376,7 +386,15 @@ async function updateAgeGate (ctx, next) {
       const afterECTitlecolorPos = addDesignMode.indexOf('" %}<!-- ec_titlecolor -->');
       let addECTitlecolor = addDesignMode.slice(0,ecTitlecolorPos+24) + ctx.request.body.ecTitleColorRgb + addDesignMode.slice(afterECTitlecolorPos);
 
-      return addECTitlecolor;
+      const overlayPos = addECTitlecolor.indexOf('assign backgroundOverlay = ');
+      const afterOverlayPos = addECTitlecolor.indexOf(' %}<!-- backgroundOverlay -->');
+      let addOverlay = addECTitlecolor.slice(0,overlayPos+27) + ctx.request.body.backgroundOverlay.toString() + addECTitlecolor.slice(afterOverlayPos);
+
+      const overlayDarkPos = addOverlay.indexOf('assign backgroundOverlayDark = ');
+      const afterOverlayDarkPos = addOverlay.indexOf(' %}<!-- backgroundOverlayColor -->');
+      let addOverlayDark = addOverlay.slice(0,overlayDarkPos+31) + ctx.request.body.backgroundOverlayDark.toString() + addOverlay.slice(afterOverlayDarkPos);
+
+      return addOverlayDark;
     })
     .catch((error) => console.log('error', error));
   console.log(updatedAgeGateLiquid);

@@ -53,7 +53,9 @@ class Index extends React.Component {
     showToast: false,
     showError: false,
     errorMessage: '',
-    designMode: true
+    designMode: true,
+    backgroundOverlay: false,
+    backgroundOverlayDark: true
   };
 
   componentDidMount() {
@@ -211,7 +213,9 @@ class Index extends React.Component {
       showToast,
       showError,
       errorMessage,
-      designMode
+      designMode,
+      backgroundOverlay,
+      backgroundOverlayDark
     } = this.state;
 
     const shopOrigin = Cookies.get('shopOrigin');
@@ -227,6 +231,12 @@ class Index extends React.Component {
 
     const emailcaptureStatus = isEmailCapture ? 'Disable' : 'Enable';
     const emailcaptureTextStatus = isEmailCapture ? 'enabled' : 'disabled';
+
+    const overlayStatus = backgroundOverlay ? 'Remove overlay' : 'Add overlay';
+    const overlayTextStatus = backgroundOverlay ? 'does' : 'does not';
+
+    const overlayColorStatus = backgroundOverlayDark ? 'Use light overlay' : 'Use dark overlay';
+    const overlayColorTextStatus = backgroundOverlayDark ? 'dark' : 'light';
 
     const urlFieldPattern = "^(http:\\/\\/www\\.|https:\\/\\/www\\.|http:\\/\\/|https:\\/\\/)[a-z0-9]+([\\-\\.]{1}[a-z0-9]+)*\\.[a-z]{2,5}(:[0-9]{1,5})?(\\/.*)?$";
 
@@ -432,7 +442,29 @@ class Index extends React.Component {
                   </div>
                 </Stack>
               </Layout.Section>
-
+              <Layout.Section>
+                <Subheading>Background Overlay</Subheading>
+                <SettingToggle
+                  action={{
+                    content: overlayStatus,
+                    onAction: this.#handleSwitch('backgroundOverlay'),
+                  }}
+                  enabled={backgroundOverlay}
+                >
+                  The background image <TextStyle variation="strong">{overlayTextStatus}</TextStyle> have an overlay.
+                </SettingToggle>
+                { backgroundOverlay && 
+                  <SettingToggle
+                    action={{
+                      content: overlayColorStatus,
+                      onAction: this.#handleSwitch('backgroundOverlayDark'),
+                    }}
+                    enabled={backgroundOverlayDark}
+                  >
+                    You're using a <TextStyle variation="strong">{overlayColorTextStatus}</TextStyle> overlay on the background image.
+                  </SettingToggle>
+                }
+              </Layout.Section>
             </Card>
 
             <Card sectioned>

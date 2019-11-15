@@ -36,7 +36,14 @@
 
 {% assign designMode = true %}<!-- designMode -->
 
-<div id="prompt-background">
+{% assign backgroundOverlay = false %}<!-- backgroundOverlay -->
+
+{% assign backgroundOverlayDark = true %}<!-- backgroundOverlayColor -->
+
+<div id="prompt-background" {% if backgroundOverlay %}class="bgo-{% if backgroundOverlayDark %}dark{% else %}light{% endif %}"{% endif %}>
+  {% if backgroundOverlay %}
+    <div class="ag-overlay"></div>
+  {% endif %}
   <div id="age-check-prompt" class="modal-prompt {% if transparentModal %}no-background{% endif %}">
     <h1>
       {{ adult_header }}
@@ -463,6 +470,17 @@ body.noscroll {
   display: none;
   align-items: center;
   transition:height 0.3s linear;
+}
+.ag-overlay{
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+#prompt-background.bgo-dark .ag-overlay{
+  background-color: rgba(0,0,0,0.5);
+}
+#prompt-background.bgo-light .ag-overlay{
+  background-color: rgba(255,255,255,0.5);
 }
 #prompt-background.ec-height{
   height: 20%;
