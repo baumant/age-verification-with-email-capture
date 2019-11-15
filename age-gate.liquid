@@ -273,24 +273,37 @@
 </div>
 
 <script>
-//disallow scrolling on body when age gate is up
+/*
+Disallow scrolling on body when age gate is up and display age verification, pulled in from scriptTag for easy shopify uninstall
+
 document.body.className += ' ' + 'noscroll';
+document.getElementById('prompt-background').style.display = 'flex';
+*/
 
 // hide age check after it fades out, fade in email capture
 document.getElementById('prompt-background').addEventListener('transitionend', function(e) {
   if (e.target == document.getElementById('prompt-background') && (e.propertyName === 'height')) {
-    document.getElementById('age-check-prompt').style.display = 'none';
-    var emailCapture = document.getElementById('age-verification-email-capture');
-    emailCapture.style.display = 'flex';
-    setTimeout(function(){ 
-      emailCapture.style.opacity = 1;
-      emailCapture.style.paddingTop = '0px';
-    }, 300);
+    showEmailCapture();
   }
 });
+function showEmailCapture(){
+  document.getElementById('age-check-prompt').style.display = 'none';
+  var emailCapture = document.getElementById('age-verification-email-capture');
+  emailCapture.style.display = 'flex';
+  setTimeout(function(){ 
+    emailCapture.style.opacity = 1;
+    emailCapture.style.paddingTop = '0px';
+  }, 300);
+}
 // close email capture functions
 document.getElementById('ec-close').addEventListener('click', function(e) {
   document.getElementById('prompt-background').style.height = '0%';
+  var days = {{rememberDays}};
+  var date = new Date();
+  date.setTime(date.getTime()+(days*24*60*60*1000));
+  var expires = "; expires="+date.toGMTString();
+  document.cookie = 'emailcaptured=true;'+expires+"; path=/";
+  
   setTimeout(function(){ 
     document.getElementById('prompt-background').style.display = 'none';
   }, 350);
@@ -299,69 +312,10 @@ document.getElementById('ec-close').addEventListener('click', function(e) {
 document.getElementsByClassName("ec-form")[0].addEventListener("submit", ecFormSubmit);
   
 function ecFormSubmit(e){
-  e.preventDefault();
   var emailInput = document.getElementById('ec-form-email').value;
-  if(emailInput !== ''){
-    var data = serialize(this);
-    var xhr = new XMLHttpRequest();
-    xhr.open('POST', '/contact');
-    xhr.send(data);
-    xhr.onreadystatechange = function () {
-      var DONE = 4;
-      var OK = 200;
-      console.log(xhr);
-      if (xhr.readyState === DONE) {
-        if (xhr.status === OK) {
-          if (xhr.responseURL.slice(-9) == "challenge") {
-            console.log('challenge');
-            document.getElementsByClassName("ec-form")[0].removeEventListener("submit", ecFormSubmit);
-            document.getElementsByClassName("ec-form")[0].submit();
-          } else {
-      console.log(xhr.responseText);
-            var target = document.querySelector('#ec-input-group');
-            
-            // remove any error classes or attributes that exist
-            target.classList.remove('input-group--error');
-            var successEmailInput = document.querySelector('#ec-form-email');
-            successEmailInput.classList.remove('input--error');
-            if(document.querySelector('#ec-form-email-error') != null){
-              document.querySelector('#ec-form-email-error').remove();
-            }
-            if(document.querySelector('.form-message') != null){
-              document.querySelector('.form-message').remove();
-            }
-            
-            var successMessage = document.createElement('p');
-            successMessage.innerHTML = 'Thank you!';
-            successMessage.classList.add('form-message','form-message--success');
-            target.parentNode.insertBefore( successMessage, target.nextSibling );
-          }
-        } else {
-          console.log('Error: ' + xhr.status); // form error
-          
-          var target = document.querySelector('#ec-input-group');
-          target.classList.add('input-group--error');
-          var errorEmailInput = document.querySelector('#ec-form-email');
-          errorEmailInput.classList.add('input--error');
-          // remove any error or success elements that exist
-          if(document.querySelector('#ec-form-email-error') != null){
-            document.querySelector('#ec-form-email-error').remove();
-          }
-          if(document.querySelector('.form-message') != null){
-            document.querySelector('.form-message').remove();
-          }
-          
-          var errorMessage = document.createElement('span');
-          errorMessage.innerHTML = 'Email was invalid';
-          errorMessage.classList.add('input-error-message');
-          errorMessage.setAttribute("id", "ec-form-email-error");
-          target.parentNode.insertBefore( errorMessage, target.nextSibling );
-        }
-      }
-    };
-  }
-  else {
-    // blank email
+  if(emailInput === ''){
+    e.preventDefault();
+    
     var target = document.querySelector('#ec-input-group');
     target.classList.add('input-group--error');
     var errorEmailInput = document.querySelector('#ec-form-email');
@@ -379,26 +333,7 @@ function ecFormSubmit(e){
     errorMessage.setAttribute("id", "ec-form-email-error");
     target.parentNode.insertBefore( errorMessage, target.nextSibling );
   }
-  
 }
-
-var serialize = function (form) {
-  var serialized = [];
-  for (var i = 0; i < form.elements.length; i++) {
-    var field = form.elements[i];
-    if (!field.name || field.disabled || field.type === 'file' || field.type === 'reset' || field.type === 'submit' || field.type === 'button') continue;
-    if (field.type === 'select-multiple') {
-      for (var n = 0; n < field.options.length; n++) {
-        if (!field.options[n].selected) continue;
-        serialized.push(encodeURIComponent(field.name) + "=" + encodeURIComponent(field.options[n].value));
-      }
-    }
-    else if ((field.type !== 'checkbox' && field.type !== 'radio') || field.checked) {
-      serialized.push(encodeURIComponent(field.name) + "=" + encodeURIComponent(field.value));
-    }
-  }
-  return serialized.join('&');
-};
 
 function ageCheck() {
   var min_age = {{ age }};
@@ -419,15 +354,12 @@ function ageCheck() {
     }
     document.body.className = document.body.className.replace("noscroll","");
     
-   if( {{ isEmailCapture }} ){
-     document.getElementById('prompt-background').classList.add('ec-height');
-     document.getElementById('age-check-prompt').style.opacity = 0;
-     if(document.getElementById('age-verification-logo') != null){
-       document.getElementById('age-verification-logo').style.opacity = 0;
-     }
-   } else {
-     location.reload();
-   }
+    if( {{ isEmailCapture }} ){
+      // will trigger showEmailCapture()
+      document.getElementById('prompt-background').classList.add('ec-height');
+    } else {
+      location.reload();
+    }
   };
 };
 
@@ -443,10 +375,18 @@ function readCookie(name) {
 };
 
 var twentyone = readCookie('twentyone');
-if (twentyone || {{dontShow}}) {
+var emailcaptured = readCookie('emailcaptured');
+
+if (twentyone) {
   // remove noscroll class if user is over 21, hide age gate
   document.body.className = document.body.className.replace("noscroll","");
-  document.write("<style> #prompt-background { display: none !important; }</style>");
+
+  if( {{ isEmailCapture }} && emailcaptured == false ){
+    document.getElementById('prompt-background').classList.add('ec-height');
+    showEmailCapture();
+  } else {
+    document.write("<style> #prompt-background { display: none !important; }</style>");
+  }
 };
 
 </script>
@@ -520,7 +460,7 @@ body.noscroll {
   left: 0;
   bottom: 0;
   z-index: 9999999;
-  display: flex;
+  display: none;
   align-items: center;
   transition:height 0.3s linear;
 }
@@ -532,6 +472,13 @@ body.noscroll {
     height: 40%;
     align-items: stretch;
   }
+}
+
+#prompt-background.ec-height #age-check-prompt {
+  opacity: 0;
+}
+#prompt-background.ec-height #age-verification-logo {
+  opacity: 0;
 }
   
 .modal-prompt select { float: left; margin-right: 10px; }

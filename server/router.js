@@ -103,6 +103,29 @@ async function installAgeGate (ctx, next) {
     })
     .catch((error) => console.log('error', error));
 
+    const stringifiedScriptParams = JSON.stringify({
+      "script_tag": {
+        "event": "onload",
+        "display_scope": "online_store",
+        "src": "https://raw.githubusercontent.com/baumant/age-gate/master/age-gate.js"
+      }
+    })
+    const putOptions = {
+      method: 'PUT',
+      body: stringifiedScriptParams,
+      credentials: 'include',
+      headers: {
+        'X-Shopify-Access-Token': ctx.session.accessToken,
+        'Content-Type': 'application/json',
+      },
+    }
+    fetch(`https://${ctx.session.shop}/admin/api/${API_VERSION}/script_tags.json`, putOptions )
+      .then((response) => response.json())
+      .then((myJson) => {
+        console.log('script response',myJson);
+      })
+      .catch((error) => console.log('error', error));
+
   await next();
     
 };
