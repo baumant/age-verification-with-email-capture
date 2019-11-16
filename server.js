@@ -49,7 +49,7 @@ app.prepare().then(() => {
     
   router.get('*', verifyRequest(), async (ctx) => {
     if ('/age-gate.js' == ctx.path){
-     await send(ctx, 'public/age-gate.js', {"maxage":1209600}); 
+     await send(ctx, 'public/age-gate.js', {"maxage":1209600000}); 
     } else {
       await handle(ctx.req, ctx.res);
       ctx.respond = false;
