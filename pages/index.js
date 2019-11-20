@@ -17,7 +17,8 @@ import {
   Subheading,
   ColorPicker,
   rgbToHsb,
-  hsbToRgb
+  hsbToRgb,
+  Select
 } from '@shopify/polaris';
 import Cookies from 'js-cookie';
 
@@ -55,7 +56,8 @@ class Index extends React.Component {
     errorMessage: '',
     designMode: true,
     backgroundOverlay: false,
-    backgroundOverlayDark: true
+    backgroundOverlayDark: true,
+    modalPosition: 'center'
   };
 
   componentDidMount() {
@@ -215,7 +217,8 @@ class Index extends React.Component {
       errorMessage,
       designMode,
       backgroundOverlay,
-      backgroundOverlayDark
+      backgroundOverlayDark,
+      modalPosition
     } = this.state;
 
     const shopOrigin = Cookies.get('shopOrigin');
@@ -285,6 +288,12 @@ class Index extends React.Component {
       </Button>
       </p>
     )
+
+    const modalPositionOptions = [
+      {label: 'Center', value: 'center'},
+      {label: 'Left', value: 'left'},
+      {label: 'Right', value: 'right'},
+    ];
 
     return (
       <Page>
@@ -468,7 +477,10 @@ class Index extends React.Component {
             </Card>
 
             <Card sectioned>
-              <Heading>Modal Background</Heading>
+              <Heading>Modal</Heading>
+              <br/>
+              
+              <Subheading>Modal Background</Subheading>
               <SettingToggle
                 action={{
                   content: modalBackgroundStatus,
@@ -478,6 +490,15 @@ class Index extends React.Component {
               >
                 The modal popup <TextStyle variation="strong">{modalBackgroundTextStatus}</TextStyle> have a background.
               </SettingToggle>
+              <br/>
+              
+              <Subheading>Modal Position</Subheading>
+              <Select
+                label="Modal Position"
+                options={modalPositionOptions}
+                onChange={this.#handleChange('modalPosition')}
+                value={this.state.modalPosition}
+              />
             </Card>
             
             <Card sectioned>

@@ -40,11 +40,13 @@
 
 {% assign backgroundOverlayDark = true %}<!-- backgroundOverlayColor -->
 
+{% assign modalPosition = "center" %}<!-- modalPosition -->
+
 <div id="prompt-background" {% if backgroundOverlay %}class="bgo-{% if backgroundOverlayDark %}dark{% else %}light{% endif %}"{% endif %}>
   {% if backgroundOverlay %}
     <div class="ag-overlay"></div>
   {% endif %}
-  <div id="age-check-prompt" class="modal-prompt {% if transparentModal %}no-background{% endif %}">
+  <div id="age-check-prompt" class="modal-prompt {% if transparentModal %}no-background{% endif %} modal-position-{{ modalPosition }}">
     <h1>
       {{ adult_header }}
     </h1>
@@ -444,6 +446,13 @@ body.noscroll {
     padding: 0;
   }
 }
+.modal-prompt.modal-position-left {
+  margin: 0 auto 0 100px;
+}
+.modal-prompt.modal-position-right {
+  margin: 0 100px 0 auto;
+}
+
 .ag-dob-select{
   display: flex;
   margin-bottom:20px;

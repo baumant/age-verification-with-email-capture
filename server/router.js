@@ -244,6 +244,10 @@ async function checkVariables(ctx, next) {
       const afterOverlayDarkVarPos = ageGateLiquid.indexOf(' %}<!-- backgroundOverlayColor -->');
       let overlayDarkVariable = (ageGateLiquid.slice(overlayDarkVarPos+31, afterOverlayDarkVarPos) == 'true');
 
+      const modalPositionVarPos = ageGateLiquid.indexOf('assign modalPosition = "');
+      const afterModalPositionVarPos = ageGateLiquid.indexOf('" %}<!-- modalPosition -->');
+      let modalPositionVariable = ageGateLiquid.slice(modalPositionVarPos+24, afterModalPositionVarPos);
+
       // return newAgeGateLiquid;
       return { 
         'age': ageVariable,
@@ -266,6 +270,7 @@ async function checkVariables(ctx, next) {
         'designMode': designModeVariable,
         'backgroundOverlay': overlayVariable,
         'backgroundOverlayDark': overlayDarkVariable,
+        'modalPosition': modalPositionVariable
       };
     })
     .catch((error) => console.log('error', error));
@@ -394,7 +399,11 @@ async function updateAgeGate (ctx, next) {
       const afterOverlayDarkPos = addOverlay.indexOf(' %}<!-- backgroundOverlayColor -->');
       let addOverlayDark = addOverlay.slice(0,overlayDarkPos+31) + ctx.request.body.backgroundOverlayDark.toString() + addOverlay.slice(afterOverlayDarkPos);
 
-      return addOverlayDark;
+      const modalPosition = addOverlayDark.indexOf('assign modalPosition = "');
+      const afterModalPosition = addOverlayDark.indexOf('" %}<!-- modalPosition -->');
+      let addModalPosition = addOverlayDark.slice(0,modalPosition+24) + ctx.request.body.modalPosition + addOverlayDark.slice(afterModalPosition);
+
+      return addModalPosition;
     })
     .catch((error) => console.log('error', error));
   console.log(updatedAgeGateLiquid);
