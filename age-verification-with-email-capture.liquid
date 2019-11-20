@@ -230,7 +230,7 @@
       </select>
       <div style="clear:both; margin-bottom:15px"></div>
     </div>
-    <button id="submit_birthdate" class="button-enter btn styled-submit" onclick="ageCheck()" style="display:inline-block;">{{enterButtonText}}</button> 
+    <button id="submit_birthdate" class="button-enter btn styled-submit" onclick="ageCheck()" style="display:inline-block;margin-left:5px;">{{enterButtonText}}</button> 
     <a href="{{ redirectUrl }}" id="button-exit" {% if exitButton %}class="btn"{% endif %} name="button-exit">{{exitButtonText}}</a>
   </div>
   {% if logoUrl != 'none' %}
@@ -449,9 +449,15 @@ body.noscroll {
 }
 .modal-prompt.modal-position-left {
   margin: 0 auto 0 100px;
+  @media screen and (max-width: 500px){
+    margin: 0 auto;
+  }
 }
 .modal-prompt.modal-position-right {
   margin: 0 100px 0 auto;
+  @media screen and (max-width: 500px){
+    margin: 0 auto;
+  }
 }
 
 .ag-dob-select{
@@ -459,6 +465,9 @@ body.noscroll {
   margin-bottom:20px;
 }
 @media screen and (max-width: 500px){
+  .ag-dob-select{
+    flex-wrap: wrap;
+  }
   .ag-dob-select select{
     margin-top: 5px;
     margin-bottom: 5px;
