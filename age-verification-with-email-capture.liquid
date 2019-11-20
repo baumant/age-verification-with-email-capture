@@ -283,7 +283,7 @@
 
 <script>
 /*
-Disallow scrolling on body when age gate is up and display age verification, pulled in from scriptTag for easy shopify uninstall
+Disallow scrolling on body when age verification is up and display age verification, pulled in from scriptTag for easy shopify uninstall
 
 document.body.className += ' ' + 'noscroll';
 document.getElementById('prompt-background').style.display = 'flex';
@@ -387,7 +387,7 @@ var twentyone = readCookie('twentyone');
 var emailcaptured = readCookie('emailcaptured');
 
 if (twentyone) {
-  // remove noscroll class if user is over 21, hide age gate
+  // remove noscroll class if user is over 21, hide age verification
   document.body.className = document.body.className.replace("noscroll","");
 
   if( {{ isEmailCapture }} && emailcaptured == null ){

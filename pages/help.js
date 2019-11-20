@@ -22,8 +22,8 @@ class HelpPage extends React.Component {
             description="If you need help or have questions, please submit an issue on Github here:"
           >
             <Card sectioned>
-              <Link url="https://github.com/baumant/age-gate/issues" external>
-                https://github.com/baumant/age-gate/issues
+              <Link url="https://github.com/baumant/age-verification-with-email-capture/issues" external>
+                https://github.com/baumant/age-verification-with-email-capture/issues
               </Link>
             </Card>
           </Layout.AnnotatedSection>

@@ -10,7 +10,7 @@ const send = require('koa-send');
 
 dotenv.config();
 const Router = require('koa-router');
-const { installAgeGate, updateAgeGate, uninstallAgeGate, checkVariables } = require('./server/router');
+const { installAgeVerification, updateAgeVerification, uninstallAgeVerification, checkVariables } = require('./server/router');
 
 
 const port = parseInt(process.env.PORT, 10) || 3000;
@@ -27,8 +27,8 @@ app.prepare().then(() => {
   server.use(bodyParser());
   server.keys = [SHOPIFY_API_SECRET_KEY];
 
-  router.post('/updateAgeGate', updateAgeGate);
-  router.post('/uninstallAgeGate', uninstallAgeGate);
+  router.post('/updateAgeVerification', updateAgeVerification);
+  router.post('/uninstallAgeVerification', uninstallAgeVerification);
   router.get('/checkVariables', checkVariables );
   
   server.use(
@@ -42,14 +42,14 @@ app.prepare().then(() => {
           ctx.cookies.set('shopOrigin', shop, { httpOnly: false });
         ctx.redirect('/');
         console.log('installing...');
-        installAgeGate(ctx, next);
+        installAgeVerification(ctx, next);
       },
     }),
   );
     
   router.get('*', verifyRequest(), async (ctx) => {
-    if ('/age-gate.js' == ctx.path){
-     await send(ctx, 'public/age-gate.js', {"maxage":1209600000}); 
+    if ('/age-verification-with-email-capture.js' == ctx.path){
+     await send(ctx, 'public/age-verification-with-email-capture.js', {"maxage":1209600000}); 
     } else {
       await handle(ctx.req, ctx.res);
       ctx.respond = false;

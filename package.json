@@ -1,8 +1,8 @@
 {
-  "name": "age-gate",
+  "name": "age-verification-with-email-capture",
   "version": "1.0.0",
-  "description": "Age gate plugin for shopify with email capture",
-  "repository": "https://github.com/baumant/age-gate",
+  "description": "Age verification plugin for shopify with email capture",
+  "repository": "https://github.com/baumant/age-verification-with-email-capture",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",

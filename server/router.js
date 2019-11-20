@@ -4,9 +4,9 @@ dotenv.config();
 
 const { API_VERSION } = process.env;
 
-async function installAgeGate (ctx, next) {
+async function installAgeVerification (ctx, next) {
   
-  console.log('INSTALLING AGE GATE: \n', ctx.session);
+  console.log('INSTALLING AGE VERIFICATION: \n', ctx.session);
   
   const themeApiUrl = `admin/api/${API_VERSION}/themes.json`;
   const options = {
@@ -39,13 +39,13 @@ async function installAgeGate (ctx, next) {
           return themeAsset.asset.value;
         })
         .then((themeLiquid) => {
-          const hasAgeGate = themeLiquid.indexOf("{% include 'age-gate' %}");
+          const hasAgeVerification = themeLiquid.indexOf("{% include 'age-verification-with-email-capture' %}");
           const bodyPosition = themeLiquid.indexOf('</body>');
-          if(hasAgeGate == -1){
-            const newTheme = themeLiquid.slice(0,bodyPosition) + "{% include 'age-gate' %}" + themeLiquid.slice(bodyPosition);
+          if(hasAgeVerification == -1){
+            const newTheme = themeLiquid.slice(0,bodyPosition) + "{% include 'age-verification-with-email-capture' %}" + themeLiquid.slice(bodyPosition);
             return newTheme;
           } else {
-            console.log('age gate already exists');
+            console.log('age verification already exists');
             const newTheme = 'noUpdate';  
             return newTheme;
           }
@@ -77,11 +77,11 @@ async function installAgeGate (ctx, next) {
           }
         })
         .catch((error) => console.log('error', error));
-      //adding age-gate.liquid snippet
+      //adding age-verification-with-email-capture.liquid snippet
       const stringifiedAssetParams = JSON.stringify({
         asset: {
-          key: "snippets/age-gate.liquid",
-          src: "https://raw.githubusercontent.com/baumant/age-gate/master/age-gate.liquid"
+          key: "snippets/age-verification-with-email-capture.liquid",
+          src: "https://raw.githubusercontent.com/baumant/age-verification-with-email-capture/master/age-verification-with-email-capture.liquid"
         }
       })
       const putOptions = {
@@ -105,7 +105,7 @@ async function installAgeGate (ctx, next) {
         script_tag: {
           event: "onload",
           display_scope: "online_store",
-          src: "https://shopify-age-gate.herokuapp.com/age-gate.js"
+          src: "https://shopify-age-verification.herokuapp.com/age-verification-with-email-capture.js"
         }
       })
       const scriptTagPostOptions = {
@@ -156,99 +156,99 @@ async function checkVariables(ctx, next) {
       .catch((error) => console.log('error', error));
   console.log('ACTIVE THEME ID: ', activeThemeId);
 
-  let ageGateVariables = await fetch(`https://${ctx.session.shop}/admin/api/${API_VERSION}/themes/${activeThemeId}/assets.json?asset[key]=snippets/age-gate.liquid`, optionsWithGet )
+  let ageVerificationVariables = await fetch(`https://${ctx.session.shop}/admin/api/${API_VERSION}/themes/${activeThemeId}/assets.json?asset[key]=snippets/age-verification-with-email-capture.liquid`, optionsWithGet )
     .then((response) => response.json())
     .then((themeAsset) => {
       console.log('returned: ', themeAsset.asset.key);
       return themeAsset.asset.value;
     })
-    .then((ageGateLiquid) => {
+    .then((ageVerificationLiquid) => {
 
-      const ageVariablePos = ageGateLiquid.indexOf('assign age = ');
-      const afterAgeVariablePos = ageGateLiquid.indexOf(' %}<!-- age variable -->');
-      let ageVariable = ageGateLiquid.slice(ageVariablePos+13,afterAgeVariablePos);
+      const ageVariablePos = ageVerificationLiquid.indexOf('assign age = ');
+      const afterAgeVariablePos = ageVerificationLiquid.indexOf(' %}<!-- age variable -->');
+      let ageVariable = ageVerificationLiquid.slice(ageVariablePos+13,afterAgeVariablePos);
 
-      const rememberDaysVariablePos = ageGateLiquid.indexOf('assign rememberDays = ');
-      const afterRememberDaysVariablePos = ageGateLiquid.indexOf(' %}<!-- rememberDays -->');
-      let rememberVariable = ageGateLiquid.slice(rememberDaysVariablePos+22, afterRememberDaysVariablePos);
+      const rememberDaysVariablePos = ageVerificationLiquid.indexOf('assign rememberDays = ');
+      const afterRememberDaysVariablePos = ageVerificationLiquid.indexOf(' %}<!-- rememberDays -->');
+      let rememberVariable = ageVerificationLiquid.slice(rememberDaysVariablePos+22, afterRememberDaysVariablePos);
       
-      const dobVariablePos = ageGateLiquid.indexOf('enter_date_of_birth = ');
-      const afterDOBVariablePos = ageGateLiquid.indexOf(' %}<!-- enter_date_of_birth -->');
-      let dobVariable = (ageGateLiquid.slice(dobVariablePos+22, afterDOBVariablePos) == 'true');
+      const dobVariablePos = ageVerificationLiquid.indexOf('enter_date_of_birth = ');
+      const afterDOBVariablePos = ageVerificationLiquid.indexOf(' %}<!-- enter_date_of_birth -->');
+      let dobVariable = (ageVerificationLiquid.slice(dobVariablePos+22, afterDOBVariablePos) == 'true');
 
-      const redirectUrlVariablePos = ageGateLiquid.indexOf('redirectUrl = "');
-      const afterRedirectUrlVariablePos = ageGateLiquid.indexOf('" %}<!-- redirectUrl -->');
-      let redirectVariable = ageGateLiquid.slice(redirectUrlVariablePos+15, afterRedirectUrlVariablePos);
+      const redirectUrlVariablePos = ageVerificationLiquid.indexOf('redirectUrl = "');
+      const afterRedirectUrlVariablePos = ageVerificationLiquid.indexOf('" %}<!-- redirectUrl -->');
+      let redirectVariable = ageVerificationLiquid.slice(redirectUrlVariablePos+15, afterRedirectUrlVariablePos);
 
-      const backgroundUrlVariablePos = ageGateLiquid.indexOf('backgroundUrl = "');
-      const afterBackgroundUrlVariablePos = ageGateLiquid.indexOf('" %}<!-- backgroundUrl -->');
-      let backgroundVariable = ageGateLiquid.slice(backgroundUrlVariablePos+17, afterBackgroundUrlVariablePos);
+      const backgroundUrlVariablePos = ageVerificationLiquid.indexOf('backgroundUrl = "');
+      const afterBackgroundUrlVariablePos = ageVerificationLiquid.indexOf('" %}<!-- backgroundUrl -->');
+      let backgroundVariable = ageVerificationLiquid.slice(backgroundUrlVariablePos+17, afterBackgroundUrlVariablePos);
 
-      const transparentModalPos = ageGateLiquid.indexOf('assign transparentModal = ');
-      const afterTransparentModalPos = ageGateLiquid.indexOf(' %}<!-- transparentModal -->');
-      let transparentModalVariable = (ageGateLiquid.slice(transparentModalPos+26, afterTransparentModalPos) == 'true');
+      const transparentModalPos = ageVerificationLiquid.indexOf('assign transparentModal = ');
+      const afterTransparentModalPos = ageVerificationLiquid.indexOf(' %}<!-- transparentModal -->');
+      let transparentModalVariable = (ageVerificationLiquid.slice(transparentModalPos+26, afterTransparentModalPos) == 'true');
 
-      const logoUrlVariablePos = ageGateLiquid.indexOf('assign logoUrl = "');
-      const afterLogoUrlVariablePos = ageGateLiquid.indexOf('" %}<!-- logoUrl -->');
-      let logoVariable = ageGateLiquid.slice(logoUrlVariablePos+18, afterLogoUrlVariablePos);
+      const logoUrlVariablePos = ageVerificationLiquid.indexOf('assign logoUrl = "');
+      const afterLogoUrlVariablePos = ageVerificationLiquid.indexOf('" %}<!-- logoUrl -->');
+      let logoVariable = ageVerificationLiquid.slice(logoUrlVariablePos+18, afterLogoUrlVariablePos);
 
-      const headingVariablePos = ageGateLiquid.indexOf('capture adult_header %}');
-      const afterHeadingVariablePos = ageGateLiquid.indexOf('{% endcapture %}<!-- adult_header -->');
-      let headingVariable = ageGateLiquid.slice(headingVariablePos+23, afterHeadingVariablePos);
+      const headingVariablePos = ageVerificationLiquid.indexOf('capture adult_header %}');
+      const afterHeadingVariablePos = ageVerificationLiquid.indexOf('{% endcapture %}<!-- adult_header -->');
+      let headingVariable = ageVerificationLiquid.slice(headingVariablePos+23, afterHeadingVariablePos);
 
-      const subheaderVariablePos = ageGateLiquid.indexOf('capture adult_text %}');
-      const afterSubheaderVariablePos = ageGateLiquid.indexOf('{% endcapture %}<!-- adult_text -->');
-      let subheaderVariable = ageGateLiquid.slice(subheaderVariablePos+21, afterSubheaderVariablePos);
+      const subheaderVariablePos = ageVerificationLiquid.indexOf('capture adult_text %}');
+      const afterSubheaderVariablePos = ageVerificationLiquid.indexOf('{% endcapture %}<!-- adult_text -->');
+      let subheaderVariable = ageVerificationLiquid.slice(subheaderVariablePos+21, afterSubheaderVariablePos);
 
-      const enterButtonTextPos = ageGateLiquid.indexOf('assign enterButtonText = "');
-      const afterEnterButtonTextPos = ageGateLiquid.indexOf('" %}<!-- enterButtonText -->');
-      let enterButtonText = ageGateLiquid.slice(enterButtonTextPos+26, afterEnterButtonTextPos);
+      const enterButtonTextPos = ageVerificationLiquid.indexOf('assign enterButtonText = "');
+      const afterEnterButtonTextPos = ageVerificationLiquid.indexOf('" %}<!-- enterButtonText -->');
+      let enterButtonText = ageVerificationLiquid.slice(enterButtonTextPos+26, afterEnterButtonTextPos);
 
-      const exitButtonTextPos = ageGateLiquid.indexOf('assign exitButtonText = "');
-      const afterExitButtonTextPos = ageGateLiquid.indexOf('" %}<!-- exitButtonText -->');
-      let exitButtonText = ageGateLiquid.slice(exitButtonTextPos+25, afterExitButtonTextPos);
+      const exitButtonTextPos = ageVerificationLiquid.indexOf('assign exitButtonText = "');
+      const afterExitButtonTextPos = ageVerificationLiquid.indexOf('" %}<!-- exitButtonText -->');
+      let exitButtonText = ageVerificationLiquid.slice(exitButtonTextPos+25, afterExitButtonTextPos);
 
-      const exitButtonVariablePos = ageGateLiquid.indexOf('assign exitButton = ');
-      const afterExitButtonVariablePos = ageGateLiquid.indexOf(' %}<!-- exitButton -->');
-      let exitVariable = (ageGateLiquid.slice(exitButtonVariablePos+20, afterExitButtonVariablePos) == 'true');
+      const exitButtonVariablePos = ageVerificationLiquid.indexOf('assign exitButton = ');
+      const afterExitButtonVariablePos = ageVerificationLiquid.indexOf(' %}<!-- exitButton -->');
+      let exitVariable = (ageVerificationLiquid.slice(exitButtonVariablePos+20, afterExitButtonVariablePos) == 'true');
 
-      const emailCaptureVariablePos = ageGateLiquid.indexOf('assign isEmailCapture = ');
-      const afterEmailCaptureVariablePos = ageGateLiquid.indexOf(' %}<!-- isEmailCapture -->');
-      let emailCaptureVariable = (ageGateLiquid.slice(emailCaptureVariablePos+24, afterEmailCaptureVariablePos) == 'true');
+      const emailCaptureVariablePos = ageVerificationLiquid.indexOf('assign isEmailCapture = ');
+      const afterEmailCaptureVariablePos = ageVerificationLiquid.indexOf(' %}<!-- isEmailCapture -->');
+      let emailCaptureVariable = (ageVerificationLiquid.slice(emailCaptureVariablePos+24, afterEmailCaptureVariablePos) == 'true');
 
-      const ecTitleVarPos = ageGateLiquid.indexOf('capture ec_title %}');
-      const afterECTitleVarPos = ageGateLiquid.indexOf('{% endcapture %}<!-- ec_title -->');
-      let ecTitleVariable = ageGateLiquid.slice(ecTitleVarPos+19, afterECTitleVarPos);
+      const ecTitleVarPos = ageVerificationLiquid.indexOf('capture ec_title %}');
+      const afterECTitleVarPos = ageVerificationLiquid.indexOf('{% endcapture %}<!-- ec_title -->');
+      let ecTitleVariable = ageVerificationLiquid.slice(ecTitleVarPos+19, afterECTitleVarPos);
 
-      const ecTitlecolorVarPos = ageGateLiquid.indexOf('assign ec_titlecolor = "');
-      const afterECTitlecolorVarPos = ageGateLiquid.indexOf('" %}<!-- ec_titlecolor -->');
-      let ecTitlecolorVariable = ageGateLiquid.slice(ecTitlecolorVarPos+24, afterECTitlecolorVarPos);
+      const ecTitlecolorVarPos = ageVerificationLiquid.indexOf('assign ec_titlecolor = "');
+      const afterECTitlecolorVarPos = ageVerificationLiquid.indexOf('" %}<!-- ec_titlecolor -->');
+      let ecTitlecolorVariable = ageVerificationLiquid.slice(ecTitlecolorVarPos+24, afterECTitlecolorVarPos);
 
-      const ecTextVarPos = ageGateLiquid.indexOf('capture ec_text %}');
-      const afterECTextVarPos = ageGateLiquid.indexOf('{% endcapture %}<!-- ec_text -->');
-      let ecTextVariable = ageGateLiquid.slice(ecTextVarPos+18, afterECTextVarPos);
+      const ecTextVarPos = ageVerificationLiquid.indexOf('capture ec_text %}');
+      const afterECTextVarPos = ageVerificationLiquid.indexOf('{% endcapture %}<!-- ec_text -->');
+      let ecTextVariable = ageVerificationLiquid.slice(ecTextVarPos+18, afterECTextVarPos);
 
-      const ecTextcolorVarPos = ageGateLiquid.indexOf('assign ec_textcolor = "');
-      const afterECTextcolorVarPos = ageGateLiquid.indexOf('" %}<!-- ec_textcolor -->');
-      let ecTextcolorVariable = ageGateLiquid.slice(ecTextcolorVarPos+23, afterECTextcolorVarPos);
+      const ecTextcolorVarPos = ageVerificationLiquid.indexOf('assign ec_textcolor = "');
+      const afterECTextcolorVarPos = ageVerificationLiquid.indexOf('" %}<!-- ec_textcolor -->');
+      let ecTextcolorVariable = ageVerificationLiquid.slice(ecTextcolorVarPos+23, afterECTextcolorVarPos);
 
-      const designModeVarPos = ageGateLiquid.indexOf('assign designMode = ');
-      const afterDesignModeVarPos = ageGateLiquid.indexOf(' %}<!-- designMode -->');
-      let designModeVariable = (ageGateLiquid.slice(designModeVarPos+20, afterDesignModeVarPos) == 'true');
+      const designModeVarPos = ageVerificationLiquid.indexOf('assign designMode = ');
+      const afterDesignModeVarPos = ageVerificationLiquid.indexOf(' %}<!-- designMode -->');
+      let designModeVariable = (ageVerificationLiquid.slice(designModeVarPos+20, afterDesignModeVarPos) == 'true');
 
-      const overlayVarPos = ageGateLiquid.indexOf('assign backgroundOverlay = ');
-      const afterOverlayVarPos = ageGateLiquid.indexOf(' %}<!-- backgroundOverlay -->');
-      let overlayVariable = (ageGateLiquid.slice(overlayVarPos+27, afterOverlayVarPos) == 'true');
+      const overlayVarPos = ageVerificationLiquid.indexOf('assign backgroundOverlay = ');
+      const afterOverlayVarPos = ageVerificationLiquid.indexOf(' %}<!-- backgroundOverlay -->');
+      let overlayVariable = (ageVerificationLiquid.slice(overlayVarPos+27, afterOverlayVarPos) == 'true');
 
-      const overlayDarkVarPos = ageGateLiquid.indexOf('assign backgroundOverlayDark = ');
-      const afterOverlayDarkVarPos = ageGateLiquid.indexOf(' %}<!-- backgroundOverlayColor -->');
-      let overlayDarkVariable = (ageGateLiquid.slice(overlayDarkVarPos+31, afterOverlayDarkVarPos) == 'true');
+      const overlayDarkVarPos = ageVerificationLiquid.indexOf('assign backgroundOverlayDark = ');
+      const afterOverlayDarkVarPos = ageVerificationLiquid.indexOf(' %}<!-- backgroundOverlayColor -->');
+      let overlayDarkVariable = (ageVerificationLiquid.slice(overlayDarkVarPos+31, afterOverlayDarkVarPos) == 'true');
 
-      const modalPositionVarPos = ageGateLiquid.indexOf('assign modalPosition = "');
-      const afterModalPositionVarPos = ageGateLiquid.indexOf('" %}<!-- modalPosition -->');
-      let modalPositionVariable = ageGateLiquid.slice(modalPositionVarPos+24, afterModalPositionVarPos);
+      const modalPositionVarPos = ageVerificationLiquid.indexOf('assign modalPosition = "');
+      const afterModalPositionVarPos = ageVerificationLiquid.indexOf('" %}<!-- modalPosition -->');
+      let modalPositionVariable = ageVerificationLiquid.slice(modalPositionVarPos+24, afterModalPositionVarPos);
 
-      // return newAgeGateLiquid;
+      // return newAgeVerificationLiquid;
       return { 
         'age': ageVariable,
         'rememberDays': rememberVariable,
@@ -275,8 +275,8 @@ async function checkVariables(ctx, next) {
     })
     .catch((error) => console.log('error', error));
 
-  ctx.body = ageGateVariables;
-  ctx.cookies.set('ageGateVariables', JSON.stringify(ageGateVariables), { httpOnly: false });
+  ctx.body = ageVerificationVariables;
+  ctx.cookies.set('ageVerificationVariables', JSON.stringify(ageVerificationVariables), { httpOnly: false });
   ctx.status = 200;
   
   console.log(ctx.response);
@@ -285,8 +285,8 @@ async function checkVariables(ctx, next) {
   
 }
 
-async function updateAgeGate (ctx, next) {
-  console.log('UPDATING AGE GATE: \n', ctx.request.body);
+async function updateAgeVerification (ctx, next) {
+  console.log('UPDATING AGE VERIFICATION: \n', ctx.request.body);
   //get the active theme ID for api calls
   const themeApiUrl = `admin/api/${API_VERSION}/themes.json`;
   const options = {
@@ -310,18 +310,18 @@ async function updateAgeGate (ctx, next) {
       .catch((error) => console.log('error', error));
   console.log('ACTIVE THEME ID: ', activeThemeId);
 
-  //add new variables to age-gate.liquid
-  let updatedAgeGateLiquid = await fetch(`https://${ctx.session.shop}/admin/api/${API_VERSION}/themes/${activeThemeId}/assets.json?asset[key]=snippets/age-gate.liquid`, optionsWithGet )
+  //add new variables to age-verification-with-email-capture.liquid
+  let updatedAgeVerificationLiquid = await fetch(`https://${ctx.session.shop}/admin/api/${API_VERSION}/themes/${activeThemeId}/assets.json?asset[key]=snippets/age-verification-with-email-capture.liquid`, optionsWithGet )
     .then((response) => response.json())
     .then((themeAsset) => {
       console.log('returned: ', themeAsset.asset.key);
       return themeAsset.asset.value;
     })
-    .then((ageGateLiquid) => {
+    .then((ageVerificationLiquid) => {
 
-      const ageVariablePos = ageGateLiquid.indexOf('assign age = ');
-      const afterAgeVariablePos = ageGateLiquid.indexOf(' %}<!-- age variable -->');
-      let addAge = ageGateLiquid.slice(0,ageVariablePos+13) + ctx.request.body.age + ageGateLiquid.slice(afterAgeVariablePos);
+      const ageVariablePos = ageVerificationLiquid.indexOf('assign age = ');
+      const afterAgeVariablePos = ageVerificationLiquid.indexOf(' %}<!-- age variable -->');
+      let addAge = ageVerificationLiquid.slice(0,ageVariablePos+13) + ctx.request.body.age + ageVerificationLiquid.slice(afterAgeVariablePos);
 
       const rememberDaysVariablePos = addAge.indexOf('assign rememberDays = ');
       const afterRememberDaysVariablePos = addAge.indexOf(' %}<!-- rememberDays -->');
@@ -406,13 +406,13 @@ async function updateAgeGate (ctx, next) {
       return addModalPosition;
     })
     .catch((error) => console.log('error', error));
-  console.log(updatedAgeGateLiquid);
+  console.log(updatedAgeVerificationLiquid);
 
-  //update age gate liquid on the store
+  //update age verification liquid on the store
   const stringifiedAssetParams = JSON.stringify({
     asset: {
-      key: "snippets/age-gate.liquid",
-      value: updatedAgeGateLiquid
+      key: "snippets/age-verification-with-email-capture.liquid",
+      value: updatedAgeVerificationLiquid
     }
   })
   const putOptions = {
@@ -432,8 +432,8 @@ async function updateAgeGate (ctx, next) {
   ctx.status = 201;
 }
 
-async function uninstallAgeGate (ctx, next) {
-  console.log('UNINSTALLING AGE GATE: \n', ctx.request.body);
+async function uninstallAgeVerification (ctx, next) {
+  console.log('UNINSTALLING AGE VERIFICATION: \n', ctx.request.body);
   //get the active theme ID for api calls
   const themeApiUrl = `admin/api/${API_VERSION}/themes.json`;
   const options = {
@@ -457,10 +457,10 @@ async function uninstallAgeGate (ctx, next) {
       .catch((error) => console.log('error', error));
   console.log('ACTIVE THEME ID: ', activeThemeId);
 
-  // DELETE age gate snippet
+  // DELETE age verification snippet
   const stringifiedAssetParams = JSON.stringify({
     asset: {
-      key: "snippets/age-gate.liquid",
+      key: "snippets/age-verification-with-email-capture.liquid",
     }
   })
   const deleteOptions = {
@@ -488,12 +488,12 @@ async function uninstallAgeGate (ctx, next) {
       return themeAsset.asset.value;
     })
     .then((themeLiquid) => {
-      const hasAgeGate = themeLiquid.indexOf("{% include 'age-gate' %}");
-      if(hasAgeGate !== -1){
-        const newTheme = themeLiquid.slice(0,hasAgeGate) + themeLiquid.slice(hasAgeGate+24);
+      const hasAgeVerification = themeLiquid.indexOf("{% include 'age-verification-with-email-capture' %}");
+      if(hasAgeVerification !== -1){
+        const newTheme = themeLiquid.slice(0,hasAgeVerification) + themeLiquid.slice(hasAgeVerification+24);
         return(newTheme);
       } else {
-        console.log('age gate already removed');
+        console.log('age verification already removed');
         const newTheme = 'noUpdate';  
         return(newTheme);
       }
@@ -543,4 +543,4 @@ async function uninstallAgeGate (ctx, next) {
   ctx.redirect(`https://${ctx.session.shop}/`);
 }
 
-module.exports = { installAgeGate, checkVariables, updateAgeGate, uninstallAgeGate };
+module.exports = { installAgeVerification, checkVariables, updateAgeVerification, uninstallAgeVerification };

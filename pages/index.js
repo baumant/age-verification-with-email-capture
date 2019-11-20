@@ -64,7 +64,7 @@ class Index extends React.Component {
     let cooks = Cookies.get();
     let currentVariables;
     
-    // check variables in age-gate.liquid
+    // check variables in 'age-verification-with-email-capture'
     fetch('/checkVariables', {
       headers: {
         'Content-Type': 'application/json',
@@ -74,7 +74,7 @@ class Index extends React.Component {
       .then(response => {
         // response.json()
         cooks = Cookies.get();
-        currentVariables = JSON.parse(cooks.ageGateVariables);
+        currentVariables = JSON.parse(cooks.ageVerificationVariables);
         console.log('checkVariables response:', response, currentVariables);
         
         // map current variables to state
@@ -150,8 +150,8 @@ class Index extends React.Component {
     }
   };
 
-  #updateAgeGate = () => {
-    fetch('/updateAgeGate', {
+  #updateAgeVerification = () => {
+    fetch('/updateAgeVerification', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -162,7 +162,7 @@ class Index extends React.Component {
       // Perform action based on response
       if (response.status === 201) {
         this.setState({showToast: true});
-        Cookies.set('ageGateVariables', JSON.stringify(this.state));
+        Cookies.set('ageVerificationVariables', JSON.stringify(this.state));
       }
       else {
         this.setState({errorMessage: response.status + ", " + response.statusText, showError: true});
@@ -176,14 +176,14 @@ class Index extends React.Component {
     console.log('submission', this.state);
   };
 
-  #uninstallAgeGate = () => {
-    fetch('/uninstallAgeGate', {
+  #uninstallAgeVerification = () => {
+    fetch('/uninstallAgeVerification', {
       method: 'POST',
       body: JSON.stringify(Cookies.get('shopOrigin')),
     }).then((response) => {
       console.log(response);
       if (response.status === 200) {
-        alert('Successfully uninstalled Age Gate');
+        alert('Successfully uninstalled Age Verification with Email Capture');
       }
       else {
         this.setState({errorMessage: response.status + ", " + response.statusText, showError: true});
@@ -262,7 +262,7 @@ class Index extends React.Component {
 
     const designmodeMarkup = designMode ? (
       <Banner
-        title="You are in Design Mode, your browser wont remember you so when you refresh the page Age Gate will be visible again."
+        title="You are in Design Mode, your browser wont remember you so when you refresh the page Age Verification with Email Capture will be visible again."
         status="warning"
         action={{
           content: 'Turn Design Mode off',
@@ -272,7 +272,7 @@ class Index extends React.Component {
     ) : null;
 
     const designSectionDescription = designMode ? (
-      <p>Customize the design of the age gate. <br/>
+      <p>Customize the design of the age verification. <br/>
       <Button plain destructive
         onClick={this.#handleSwitch('designMode')}
       >
@@ -280,7 +280,7 @@ class Index extends React.Component {
       </Button>
       </p>
     ) : (
-      <p>Customize the design of the age gate. <br/>
+      <p>Customize the design of the age verification. <br/>
       <Button plain
         onClick={this.#handleSwitch('designMode')}
       >
@@ -643,16 +643,16 @@ class Index extends React.Component {
             {
               content: 'Save Settings',
               onAction: () => {
-                this.#updateAgeGate();
+                this.#updateAgeVerification();
               },
             },
           ]}
           secondaryActions={[
             {
-              content: 'Uninstall Age Gate',
+              content: 'Uninstall Age Verification with Email Capture',
               onAction: () => {
-                console.log('uninstall age gate action');
-                this.#uninstallAgeGate();
+                console.log('uninstall age verification action');
+                this.#uninstallAgeVerification();
               },
             },
           ]}

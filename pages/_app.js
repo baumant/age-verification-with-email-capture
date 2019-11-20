@@ -18,7 +18,7 @@ class MyApp extends App {
       return (
         <React.Fragment>
           <Head>
-            <title>Age Gate</title>
+            <title>Age Verification with Email Capture</title>
             <meta charSet="utf-8" />
             </Head>
             <AppProvider
@@ -34,7 +34,7 @@ class MyApp extends App {
       return (
         <React.Fragment>
           <Head>
-            <title>Age Gate</title>
+            <title>Age Verification with Email Capture</title>
             <meta charSet="utf-8" />
             </Head>
             <AppProvider
