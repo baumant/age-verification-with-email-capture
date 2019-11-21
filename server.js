@@ -50,8 +50,6 @@ app.prepare().then(() => {
   router.get('*', verifyRequest(), async (ctx) => {
     if ('/age-verification-with-email-capture.js' == ctx.path){
      await send(ctx, 'public/age-verification-with-email-capture.js', {"maxage":1209600000}); 
-    } else if ('/privacy-policy' == ctx.path){
-     await send(ctx, 'public/privacy-policy.txt', {"maxage":1209600000}); 
     } else {
       await handle(ctx.req, ctx.res);
       ctx.respond = false;
