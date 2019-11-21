@@ -105,7 +105,7 @@ async function installAgeVerification (ctx, next) {
         script_tag: {
           event: "onload",
           display_scope: "online_store",
-          src: "https://shopify-age-verification.herokuapp.com/age-verification-with-email-capture.js"
+          src: "https://age-verify-with-email-capture.herokuapp.com/age-verification-with-email-capture.js"
         }
       })
       const scriptTagPostOptions = {
