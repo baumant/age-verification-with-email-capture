@@ -30,6 +30,11 @@ app.prepare().then(() => {
   router.post('/updateAgeVerification', updateAgeVerification);
   router.post('/uninstallAgeVerification', uninstallAgeVerification);
   router.get('/checkVariables', checkVariables );
+
+  router.get('/age-verification-with-email-capture.js', async(ctx) => {
+    ctx.type = 'text/javascript';
+    await send(ctx, 'public/age-verification-with-email-capture.js', {"maxage":1209600000}); 
+  });
   
   server.use(
     createShopifyAuth({
@@ -47,15 +52,16 @@ app.prepare().then(() => {
     }),
   );
     
-  router.get('*', verifyRequest(), async (ctx) => {
-    if ('/age-verification-with-email-capture.js' == ctx.path){
-      ctx.type = 'text/javascript';
-      await send(ctx, 'public/age-verification-with-email-capture.js', {"maxage":1209600000}); 
-    } else {
-      await handle(ctx.req, ctx.res);
-      ctx.respond = false;
-      ctx.res.statusCode = 200;  
-    }
+  router.get(['/','/help','/updateAgeVerification','/uninstallAgeVerification','/checkVariables'], verifyRequest(), async (ctx) => {
+    await handle(ctx.req, ctx.res);
+    ctx.respond = false;
+    ctx.res.statusCode = 200;
+  });
+
+  router.get('*', async (ctx) => {
+    await handle(ctx.req, ctx.res);
+    ctx.respond = false;
+    ctx.res.statusCode = 200;
   });
   
   server.use(router.routes());
