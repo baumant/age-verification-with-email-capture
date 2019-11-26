@@ -35,6 +35,11 @@ app.prepare().then(() => {
     ctx.type = 'text/javascript';
     await send(ctx, 'public/age-verification-with-email-capture.js', {"maxage":1209600000}); 
   });
+
+  router.get('/privacy-policy', async(ctx) => {
+    ctx.type = 'text/html';
+    await send(ctx, 'public/privacy-policy.html', {"maxage":1209600000}); 
+  });
   
   server.use(
     createShopifyAuth({
