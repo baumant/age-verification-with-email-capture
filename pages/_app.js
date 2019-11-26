@@ -1,5 +1,6 @@
 import App from 'next/app';
 import Head from 'next/head';
+import {Provider, Loading} from '@shopify/app-bridge-react';
 import { 
   AppProvider,
   Spinner
@@ -14,20 +15,21 @@ class MyApp extends App {
 
   render() {
     const { Component, pageProps } = this.props;
+    const config = {apiKey: API_KEY, shopOrigin: this.state.shopOrigin};
+
     if (this.state.shopOrigin == undefined) {
       return (
         <React.Fragment>
           <Head>
             <title>Age Verification with Email Capture</title>
             <meta charSet="utf-8" />
-            </Head>
-            <AppProvider
-              shopOrigin={this.state.shopOrigin}
-              apiKey={API_KEY}
-              forceRedirect
-            >
+          </Head>
+          <AppProvider>
+            <Provider config={config}>
+              <Loading />
               <Spinner accessibilityLabel="Spinner example" size="large" color="inkLightest" />
-            </AppProvider>
+            </Provider>
+          </AppProvider>
         </React.Fragment>
       )  
     } else {
@@ -36,14 +38,15 @@ class MyApp extends App {
           <Head>
             <title>Age Verification with Email Capture</title>
             <meta charSet="utf-8" />
-            </Head>
-            <AppProvider
-              shopOrigin={this.state.shopOrigin}
-              apiKey={API_KEY}
-              forceRedirect
-            >
+          </Head>
+          <AppProvider
+            forceRedirect
+          >
+            <Provider config={config}>
+              <Loading />
               <Component {...pageProps} />
-            </AppProvider>
+            </Provider>
+          </AppProvider>
         </React.Fragment>
       );
     }
