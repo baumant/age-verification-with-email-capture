@@ -490,7 +490,7 @@ async function uninstallAgeVerification (ctx, next) {
     .then((themeLiquid) => {
       const hasAgeVerification = themeLiquid.indexOf("{% include 'age-verification-with-email-capture' %}");
       if(hasAgeVerification !== -1){
-        const newTheme = themeLiquid.slice(0,hasAgeVerification) + themeLiquid.slice(hasAgeVerification+24);
+        const newTheme = themeLiquid.slice(0,hasAgeVerification) + themeLiquid.slice(hasAgeVerification+51);
         return(newTheme);
       } else {
         console.log('age verification already removed');
