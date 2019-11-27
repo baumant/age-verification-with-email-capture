@@ -12,7 +12,7 @@
 
 {% assign rememberDays = 14 %}<!-- rememberDays -->
 
-{% assign dontShow = false %}<!-- dontShow -->
+{% assign dontShow = true %}<!-- dontShow -->
 
 {% capture adult_header %}You must be of legal age to enter this site{% endcapture %}<!-- adult_header -->
 
@@ -42,7 +42,7 @@
 
 {% assign modalPosition = "center" %}<!-- modalPosition -->
 
-<div id="prompt-background" {% if backgroundOverlay %}class="bgo-{% if backgroundOverlayDark %}dark{% else %}light{% endif %}"{% endif %}>
+<div id="prompt-background" class="{% if backgroundOverlay %}bgo-{% if backgroundOverlayDark %}dark{% else %}light{% endif %}{% endif %} {% if dontShow %}dontShow{% endif %} ">
   {% if backgroundOverlay %}
     <div class="ag-overlay"></div>
   {% endif %}
@@ -489,6 +489,9 @@ body.noscroll {
   display: none;
   align-items: center;
   transition:height 0.3s linear;
+}
+#prompt-background.dontShow {
+  display: none !important;
 }
 .ag-overlay{
   position: absolute;

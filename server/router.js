@@ -248,6 +248,10 @@ async function checkVariables(ctx, next) {
       const afterModalPositionVarPos = ageVerificationLiquid.indexOf('" %}<!-- modalPosition -->');
       let modalPositionVariable = ageVerificationLiquid.slice(modalPositionVarPos+24, afterModalPositionVarPos);
 
+      const dontShowVarPos = ageVerificationLiquid.indexOf('assign dontShow = ');
+      const afterDontShowVarPos = ageVerificationLiquid.indexOf(' %}<!-- dontShow -->');
+      let dontShowVariable = (ageVerificationLiquid.slice(dontShowVarPos+18, afterDontShowVarPos) == 'true');
+
       // return newAgeVerificationLiquid;
       return { 
         'age': ageVariable,
@@ -270,7 +274,8 @@ async function checkVariables(ctx, next) {
         'designMode': designModeVariable,
         'backgroundOverlay': overlayVariable,
         'backgroundOverlayDark': overlayDarkVariable,
-        'modalPosition': modalPositionVariable
+        'modalPosition': modalPositionVariable,
+        'dontShow': dontShowVariable
       };
     })
     .catch((error) => console.log('error', error));
@@ -403,7 +408,11 @@ async function updateAgeVerification (ctx, next) {
       const afterModalPosition = addOverlayDark.indexOf('" %}<!-- modalPosition -->');
       let addModalPosition = addOverlayDark.slice(0,modalPosition+24) + ctx.request.body.modalPosition + addOverlayDark.slice(afterModalPosition);
 
-      return addModalPosition;
+      const dontShowPos = addModalPosition.indexOf('assign dontShow = ');
+      const afterDontShowPos = addModalPosition.indexOf(' %}<!-- dontShow -->');
+      let addDontShow = addModalPosition.slice(0,dontShowPos+18) + ctx.request.body.dontShow.toString() + addModalPosition.slice(afterDontShowPos);
+
+      return addDontShow;
     })
     .catch((error) => console.log('error', error));
   console.log(updatedAgeVerificationLiquid);

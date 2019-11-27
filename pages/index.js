@@ -57,7 +57,8 @@ class Index extends React.Component {
     designMode: true,
     backgroundOverlay: false,
     backgroundOverlayDark: true,
-    modalPosition: 'center'
+    modalPosition: 'center',
+    dontShow: true
   };
 
   componentDidMount() {
@@ -218,7 +219,8 @@ class Index extends React.Component {
       designMode,
       backgroundOverlay,
       backgroundOverlayDark,
-      modalPosition
+      modalPosition,
+      dontShow
     } = this.state;
 
     const shopOrigin = Cookies.get('shopOrigin');
@@ -228,6 +230,9 @@ class Index extends React.Component {
 
     const dobStatus = requireDOB ? 'Disable' : 'Enable';
     const dobTextStatus = requireDOB ? 'enabled' : 'disabled';
+
+    const dontShowStatus = dontShow ? 'Enable' : 'Disable';
+    const dontShowTextStatus = dontShow ? 'disabled' : 'enabled';
     
     const exitButtonStatus = exitButton ? 'Disable' : 'Enable';
     const exitButtonTextStatus = exitButton ? 'a button' : 'text';
@@ -300,6 +305,21 @@ class Index extends React.Component {
         <Layout>
           {toastMarkup}
           {designmodeMarkup}
+          <Layout.AnnotatedSection
+            title="Enable Age Verify with Email Capture"
+            description="You must enable the app before it will show up on your site"
+          >
+            <SettingToggle
+              action={{
+                content: dontShowStatus,
+                onAction: this.#handleSwitch('dontShow'),
+              }}
+              enabled={dontShow}
+            >
+              Age Verification with Email Capture is <TextStyle variation="strong">{dontShowTextStatus}</TextStyle>.
+            </SettingToggle>
+          </Layout.AnnotatedSection>
+
           <Layout.AnnotatedSection
             title="Age Restriction"
             description="The age required to enter."
