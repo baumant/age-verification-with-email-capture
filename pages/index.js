@@ -178,13 +178,17 @@ class Index extends React.Component {
   };
 
   #uninstallAgeVerification = () => {
+    var shopOrigin = JSON.stringify(Cookies.get('shopOrigin'));
     fetch('/uninstallAgeVerification', {
       method: 'POST',
-      body: JSON.stringify(Cookies.get('shopOrigin')),
+      body: shopOrigin,
     }).then((response) => {
       console.log(response);
       if (response.status === 200) {
+        var uninstallRedirect = 'https://'.concat(shopOrigin.replace(new RegExp('"', 'g'),'').concat("/admin/apps/"));
+        console.log(uninstallRedirect);
         alert('Successfully uninstalled Age Verification with Email Capture');
+        top.location.href = uninstallRedirect;
       }
       else {
         this.setState({errorMessage: response.status + ", " + response.statusText, showError: true});

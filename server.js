@@ -15,7 +15,7 @@ const { installAgeVerification, updateAgeVerification, uninstallAgeVerification,
 
 const port = parseInt(process.env.PORT, 10) || 3000;
 const dev = process.env.NODE_ENV !== 'production';
-const app = next({ dev });
+const app = next({ dev: dev });
 const handle = app.getRequestHandler();
 
 const { SHOPIFY_API_SECRET_KEY, SHOPIFY_API_KEY, API_VERSION } = process.env;
@@ -27,9 +27,15 @@ app.prepare().then(() => {
   server.use(bodyParser());
   server.keys = [SHOPIFY_API_SECRET_KEY];
 
-  router.post('/updateAgeVerification', updateAgeVerification);
-  router.post('/uninstallAgeVerification', uninstallAgeVerification);
-  router.get('/checkVariables', checkVariables );
+  router.post('/updateAgeVerification', updateAgeVerification, ctx => {
+    ctx.res.statusCode = 201;
+  });
+  router.post('/uninstallAgeVerification', uninstallAgeVerification, ctx => {
+    ctx.res.statusCode = 200;
+  });
+  router.get('/checkVariables', checkVariables, ctx => {
+    ctx.res.statusCode = 200;
+  });
 
   router.get('/age-verification-with-email-capture.js', async(ctx) => {
     ctx.type = 'text/javascript';
@@ -39,6 +45,10 @@ app.prepare().then(() => {
   router.get('/privacy-policy', async(ctx) => {
     ctx.type = 'text/html';
     await send(ctx, 'public/privacy-policy.html', {"maxage":1209600000}); 
+  });
+
+  router.post(['/customer-redact', '/shop-redact', '/customer-datareq'], async(ctx) => {
+    ctx.res.statusCode = 200;
   });
   
   server.use(
@@ -52,7 +62,7 @@ app.prepare().then(() => {
           ctx.cookies.set('shopOrigin', shop, { httpOnly: false });
         ctx.redirect('/');
         console.log('installing...');
-        installAgeVerification(ctx, next);
+        installAgeVerification(ctx);
       },
     }),
   );

@@ -6,7 +6,7 @@ const { API_VERSION } = process.env;
 
 async function installAgeVerification (ctx, next) {
   
-  console.log('INSTALLING AGE VERIFICATION: \n', ctx.session);
+  console.log('INSTALLING AGE VERIFICATION: \n', ctx.session.shop);
   
   const themeApiUrl = `admin/api/${API_VERSION}/themes.json`;
   const options = {
@@ -93,7 +93,7 @@ async function installAgeVerification (ctx, next) {
           'Content-Type': 'application/json',
         },
       }
-      console.log(`https://${ctx.session.shop}/admin/api/${API_VERSION}/themes/${activeThemeId}/assets.json`, putOptions);
+      // console.log(`https://${ctx.session.shop}/admin/api/${API_VERSION}/themes/${activeThemeId}/assets.json`, putOptions);
       fetch(`https://${ctx.session.shop}/admin/api/${API_VERSION}/themes/${activeThemeId}/assets.json`, putOptions )
         .then((response) => response.json())
         .then((myJson) => {
@@ -119,19 +119,15 @@ async function installAgeVerification (ctx, next) {
       }
       fetch(`https://${ctx.session.shop}/admin/api/${API_VERSION}/script_tags.json`, scriptTagPostOptions )
         .then((response) => {
-          console.log('script response', response);
+          console.log('Script Response: ', response.url, response.status, response.statusText);
         })
         .catch((error) => console.log('error', error));
     })
     .catch((error) => console.log('error', error));
-
-  await next();
-    
 };
 
 async function checkVariables(ctx, next) {
-  console.log('CHECKING VARIABLES: \n')
-  console.log(ctx.session);
+  console.log('CHECKING VARIABLES: ', ctx.session.shop);
 
   //get the active theme ID for api calls
   const themeApiUrl = `admin/api/${API_VERSION}/themes.json`;
@@ -153,7 +149,7 @@ async function checkVariables(ctx, next) {
           }
         }
       })
-      .catch((error) => console.log('error', error));
+      .catch((error) => console.log('Error fetching themeApiUrl: ', error));
   console.log('ACTIVE THEME ID: ', activeThemeId);
 
   let ageVerificationVariables = await fetch(`https://${ctx.session.shop}/admin/api/${API_VERSION}/themes/${activeThemeId}/assets.json?asset[key]=snippets/age-verification-with-email-capture.liquid`, optionsWithGet )
@@ -284,14 +280,15 @@ async function checkVariables(ctx, next) {
   ctx.cookies.set('ageVerificationVariables', JSON.stringify(ageVerificationVariables), { httpOnly: false });
   ctx.status = 200;
   
-  console.log(ctx.response);
+  // take a look at the response
+  // console.log(ctx.response);
 
   await next();
   
 }
 
 async function updateAgeVerification (ctx, next) {
-  console.log('UPDATING AGE VERIFICATION: \n', ctx.request.body);
+  console.log('UPDATING AGE VERIFICATION: ', ctx.request.header.referer); // console log ctx.request.body for debugging
   //get the active theme ID for api calls
   const themeApiUrl = `admin/api/${API_VERSION}/themes.json`;
   const options = {
@@ -415,7 +412,7 @@ async function updateAgeVerification (ctx, next) {
       return addDontShow;
     })
     .catch((error) => console.log('error', error));
-  console.log(updatedAgeVerificationLiquid);
+  // console.log(updatedAgeVerificationLiquid);
 
   //update age verification liquid on the store
   const stringifiedAssetParams = JSON.stringify({
@@ -442,7 +439,7 @@ async function updateAgeVerification (ctx, next) {
 }
 
 async function uninstallAgeVerification (ctx, next) {
-  console.log('UNINSTALLING AGE VERIFICATION: \n', ctx.request.body);
+  console.log('UNINSTALLING AGE VERIFICATION: \n', ctx.request);
   //get the active theme ID for api calls
   const themeApiUrl = `admin/api/${API_VERSION}/themes.json`;
   const options = {
@@ -549,7 +546,8 @@ async function uninstallAgeVerification (ctx, next) {
         ctx.status = response.status;
       })
       .catch((error) => console.log('error', error));
-  ctx.redirect(`https://${ctx.session.shop}/`);
+  
+  await next();
 }
 
 module.exports = { installAgeVerification, checkVariables, updateAgeVerification, uninstallAgeVerification };
