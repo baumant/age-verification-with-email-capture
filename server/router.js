@@ -439,7 +439,7 @@ async function updateAgeVerification (ctx, next) {
 }
 
 async function uninstallAgeVerification (ctx, next) {
-  console.log('UNINSTALLING AGE VERIFICATION: \n', ctx.request);
+  console.log('UNINSTALLING AGE VERIFICATION: \n', ctx.request.header.referer);
   //get the active theme ID for api calls
   const themeApiUrl = `admin/api/${API_VERSION}/themes.json`;
   const options = {
