@@ -3,7 +3,7 @@ console.log('--age verification with email capture script loaded');
 var twentyone = readCookie('twentyone');
 var emailcaptured = readCookie('emailcaptured');
 
-document.body.className += ' ' + 'noscroll';
+// document.body.className += ' ' + 'noscroll';
 document.getElementById('prompt-background').style.display = 'flex';
 
 if (twentyone) {
