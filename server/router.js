@@ -2,7 +2,7 @@ require('isomorphic-fetch');
 const dotenv = require('dotenv');
 dotenv.config();
 
-const { API_VERSION } = process.env;
+const { API_VERSION, MAILCHIMP_API_KEY } = process.env;
 
 async function installAgeVerification (ctx, next) {
   
@@ -77,29 +77,315 @@ async function installAgeVerification (ctx, next) {
           }
         })
         .catch((error) => console.log('error', error));
-      //adding age-verification-with-email-capture.liquid snippet
-      const stringifiedAssetParams = JSON.stringify({
-        asset: {
-          key: "snippets/age-verification-with-email-capture.liquid",
-          src: "https://raw.githubusercontent.com/baumant/age-verification-with-email-capture/master/age-verification-with-email-capture.liquid"
-        }
-      })
-      const putOptions = {
-        method: 'PUT',
-        body: stringifiedAssetParams,
-        credentials: 'include',
-        headers: {
-          'X-Shopify-Access-Token': ctx.session.accessToken,
-          'Content-Type': 'application/json',
-        },
-      }
-      // console.log(`https://${ctx.session.shop}/admin/api/${API_VERSION}/themes/${activeThemeId}/assets.json`, putOptions);
-      fetch(`https://${ctx.session.shop}/admin/api/${API_VERSION}/themes/${activeThemeId}/assets.json`, putOptions )
-        .then((response) => response.json())
-        .then((myJson) => {
-          console.log(myJson);
-        })
-        .catch((error) => console.log('error', error));
+      
+        fetch(`https://${ctx.session.shop}/admin/api/${API_VERSION}/themes/${activeThemeId}/assets.json?asset[key]=snippets/age-verification-with-email-capture.liquid`, optionsWithGet )
+          .then((response) => {
+            if (response.status == 200) {
+              response.json()
+              .then((themeAsset) => {
+                console.log('returned: ', themeAsset.asset.key);
+                return themeAsset.asset.value;
+              })
+              .then((ageVerificationLiquid) => {
+
+                const ageVariablePos = ageVerificationLiquid.indexOf('assign age = ');
+                const afterAgeVariablePos = ageVerificationLiquid.indexOf(' %}<!-- age variable -->');
+                let ageVariable = ageVerificationLiquid.slice(ageVariablePos+13,afterAgeVariablePos);
+
+                const rememberDaysVariablePos = ageVerificationLiquid.indexOf('assign rememberDays = ');
+                const afterRememberDaysVariablePos = ageVerificationLiquid.indexOf(' %}<!-- rememberDays -->');
+                let rememberVariable = ageVerificationLiquid.slice(rememberDaysVariablePos+22, afterRememberDaysVariablePos);
+                
+                const dobVariablePos = ageVerificationLiquid.indexOf('enter_date_of_birth = ');
+                const afterDOBVariablePos = ageVerificationLiquid.indexOf(' %}<!-- enter_date_of_birth -->');
+                let dobVariable = (ageVerificationLiquid.slice(dobVariablePos+22, afterDOBVariablePos) == 'true');
+
+                const redirectUrlVariablePos = ageVerificationLiquid.indexOf('redirectUrl = "');
+                const afterRedirectUrlVariablePos = ageVerificationLiquid.indexOf('" %}<!-- redirectUrl -->');
+                let redirectVariable = ageVerificationLiquid.slice(redirectUrlVariablePos+15, afterRedirectUrlVariablePos);
+
+                const backgroundUrlVariablePos = ageVerificationLiquid.indexOf('backgroundUrl = "');
+                const afterBackgroundUrlVariablePos = ageVerificationLiquid.indexOf('" %}<!-- backgroundUrl -->');
+                let backgroundVariable = ageVerificationLiquid.slice(backgroundUrlVariablePos+17, afterBackgroundUrlVariablePos);
+
+                const transparentModalPos = ageVerificationLiquid.indexOf('assign transparentModal = ');
+                const afterTransparentModalPos = ageVerificationLiquid.indexOf(' %}<!-- transparentModal -->');
+                let transparentModalVariable = (ageVerificationLiquid.slice(transparentModalPos+26, afterTransparentModalPos) == 'true');
+
+                const logoUrlVariablePos = ageVerificationLiquid.indexOf('assign logoUrl = "');
+                const afterLogoUrlVariablePos = ageVerificationLiquid.indexOf('" %}<!-- logoUrl -->');
+                let logoVariable = ageVerificationLiquid.slice(logoUrlVariablePos+18, afterLogoUrlVariablePos);
+
+                const headingVariablePos = ageVerificationLiquid.indexOf('capture adult_header %}');
+                const afterHeadingVariablePos = ageVerificationLiquid.indexOf('{% endcapture %}<!-- adult_header -->');
+                let headingVariable = ageVerificationLiquid.slice(headingVariablePos+23, afterHeadingVariablePos);
+
+                const subheaderVariablePos = ageVerificationLiquid.indexOf('capture adult_text %}');
+                const afterSubheaderVariablePos = ageVerificationLiquid.indexOf('{% endcapture %}<!-- adult_text -->');
+                let subheaderVariable = ageVerificationLiquid.slice(subheaderVariablePos+21, afterSubheaderVariablePos);
+
+                const enterButtonTextPos = ageVerificationLiquid.indexOf('assign enterButtonText = "');
+                const afterEnterButtonTextPos = ageVerificationLiquid.indexOf('" %}<!-- enterButtonText -->');
+                let enterButtonText = ageVerificationLiquid.slice(enterButtonTextPos+26, afterEnterButtonTextPos);
+
+                const exitButtonTextPos = ageVerificationLiquid.indexOf('assign exitButtonText = "');
+                const afterExitButtonTextPos = ageVerificationLiquid.indexOf('" %}<!-- exitButtonText -->');
+                let exitButtonText = ageVerificationLiquid.slice(exitButtonTextPos+25, afterExitButtonTextPos);
+
+                const exitButtonVariablePos = ageVerificationLiquid.indexOf('assign exitButton = ');
+                const afterExitButtonVariablePos = ageVerificationLiquid.indexOf(' %}<!-- exitButton -->');
+                let exitVariable = (ageVerificationLiquid.slice(exitButtonVariablePos+20, afterExitButtonVariablePos) == 'true');
+
+                const emailCaptureVariablePos = ageVerificationLiquid.indexOf('assign isEmailCapture = ');
+                const afterEmailCaptureVariablePos = ageVerificationLiquid.indexOf(' %}<!-- isEmailCapture -->');
+                let emailCaptureVariable = (ageVerificationLiquid.slice(emailCaptureVariablePos+24, afterEmailCaptureVariablePos) == 'true');
+
+                const ecTitleVarPos = ageVerificationLiquid.indexOf('capture ec_title %}');
+                const afterECTitleVarPos = ageVerificationLiquid.indexOf('{% endcapture %}<!-- ec_title -->');
+                let ecTitleVariable = ageVerificationLiquid.slice(ecTitleVarPos+19, afterECTitleVarPos);
+
+                const ecTitlecolorVarPos = ageVerificationLiquid.indexOf('assign ec_titlecolor = "');
+                const afterECTitlecolorVarPos = ageVerificationLiquid.indexOf('" %}<!-- ec_titlecolor -->');
+                let ecTitlecolorVariable = ageVerificationLiquid.slice(ecTitlecolorVarPos+24, afterECTitlecolorVarPos);
+
+                const ecTextVarPos = ageVerificationLiquid.indexOf('capture ec_text %}');
+                const afterECTextVarPos = ageVerificationLiquid.indexOf('{% endcapture %}<!-- ec_text -->');
+                let ecTextVariable = ageVerificationLiquid.slice(ecTextVarPos+18, afterECTextVarPos);
+
+                const ecTextcolorVarPos = ageVerificationLiquid.indexOf('assign ec_textcolor = "');
+                const afterECTextcolorVarPos = ageVerificationLiquid.indexOf('" %}<!-- ec_textcolor -->');
+                let ecTextcolorVariable = ageVerificationLiquid.slice(ecTextcolorVarPos+23, afterECTextcolorVarPos);
+
+                const designModeVarPos = ageVerificationLiquid.indexOf('assign designMode = ');
+                const afterDesignModeVarPos = ageVerificationLiquid.indexOf(' %}<!-- designMode -->');
+                let designModeVariable = (ageVerificationLiquid.slice(designModeVarPos+20, afterDesignModeVarPos) == 'true');
+
+                const overlayVarPos = ageVerificationLiquid.indexOf('assign backgroundOverlay = ');
+                const afterOverlayVarPos = ageVerificationLiquid.indexOf(' %}<!-- backgroundOverlay -->');
+                let overlayVariable = (ageVerificationLiquid.slice(overlayVarPos+27, afterOverlayVarPos) == 'true');
+
+                const overlayDarkVarPos = ageVerificationLiquid.indexOf('assign backgroundOverlayDark = ');
+                const afterOverlayDarkVarPos = ageVerificationLiquid.indexOf(' %}<!-- backgroundOverlayColor -->');
+                let overlayDarkVariable = (ageVerificationLiquid.slice(overlayDarkVarPos+31, afterOverlayDarkVarPos) == 'true');
+
+                const modalPositionVarPos = ageVerificationLiquid.indexOf('assign modalPosition = "');
+                const afterModalPositionVarPos = ageVerificationLiquid.indexOf('" %}<!-- modalPosition -->');
+                let modalPositionVariable = ageVerificationLiquid.slice(modalPositionVarPos+24, afterModalPositionVarPos);
+
+                const dontShowVarPos = ageVerificationLiquid.indexOf('assign dontShow = ');
+                const afterDontShowVarPos = ageVerificationLiquid.indexOf(' %}<!-- dontShow -->');
+                let dontShowVariable = (ageVerificationLiquid.slice(dontShowVarPos+18, afterDontShowVarPos) == 'true');
+
+                // return newAgeVerificationLiquid;
+                ageVerificationVariables = { 
+                  'age': ageVariable,
+                  'rememberDays': rememberVariable,
+                  'requireDOB': dobVariable,
+                  'backgroundUrl': backgroundVariable,
+                  'transparentModal': transparentModalVariable,
+                  'logoUrl': logoVariable,
+                  'redirectUrl': redirectVariable,
+                  'headerText': headingVariable,
+                  'subheaderText': subheaderVariable,
+                  'enterButtonText': enterButtonText,
+                  'exitButtonText': exitButtonText,
+                  'exitButton': exitVariable,
+                  'isEmailCapture': emailCaptureVariable,
+                  'ecTitle': ecTitleVariable,
+                  'ecTitleColorRgb': ecTitlecolorVariable,
+                  'ecText': ecTextVariable,
+                  'ecTextColorRgb': ecTextcolorVariable,
+                  'designMode': designModeVariable,
+                  'backgroundOverlay': overlayVariable,
+                  'backgroundOverlayDark': overlayDarkVariable,
+                  'modalPosition': modalPositionVariable,
+                  'dontShow': dontShowVariable
+                };
+
+                console.log(ageVerificationVariables);
+                return ageVerificationVariables
+              })
+              .then((ageVarificationVariables) => {
+                const stringifiedAssetParams = JSON.stringify({
+                  asset: {
+                    key: "snippets/age-verification-with-email-capture.liquid",
+                    src: "https://raw.githubusercontent.com/baumant/age-verification-with-email-capture/master/age-verification-with-email-capture.liquid"
+                  }
+                })
+                const putOptions = {
+                  method: 'PUT',
+                  body: stringifiedAssetParams,
+                  credentials: 'include',
+                  headers: {
+                    'X-Shopify-Access-Token': ctx.session.accessToken,
+                    'Content-Type': 'application/json',
+                  },
+                }
+                // console.log(`https://${ctx.session.shop}/admin/api/${API_VERSION}/themes/${activeThemeId}/assets.json`, putOptions);
+                fetch(`https://${ctx.session.shop}/admin/api/${API_VERSION}/themes/${activeThemeId}/assets.json`, putOptions )
+                  .then((response) => response.json())
+                  .then((myJson) => {
+                    console.log(myJson);
+
+                    //update age gate with old variables
+                    fetch(`https://${ctx.session.shop}/admin/api/${API_VERSION}/themes/${activeThemeId}/assets.json?asset[key]=snippets/age-verification-with-email-capture.liquid`, optionsWithGet )
+                      .then((response) => response.json())
+                      .then((themeAsset) => {
+                        console.log('returned: ', themeAsset.asset.key);
+                        return themeAsset.asset.value;
+                      })
+                      .then((ageVerificationLiquid) => {
+                        console.log('old variables ', ageVerificationVariables);
+
+                        const ageVariablePos = ageVerificationLiquid.indexOf('assign age = ');
+                        const afterAgeVariablePos = ageVerificationLiquid.indexOf(' %}<!-- age variable -->');
+                        let addAge = ageVerificationLiquid.slice(0,ageVariablePos+13) + ageVerificationVariables.age + ageVerificationLiquid.slice(afterAgeVariablePos);
+
+                        const rememberDaysVariablePos = addAge.indexOf('assign rememberDays = ');
+                        const afterRememberDaysVariablePos = addAge.indexOf(' %}<!-- rememberDays -->');
+                        let addRemember = addAge.slice(0,rememberDaysVariablePos+22) + ageVerificationVariables.rememberDays + addAge.slice(afterRememberDaysVariablePos);
+                        
+                        const dobVariablePos = addRemember.indexOf('enter_date_of_birth = ');
+                        const afterDOBVariablePos = addRemember.indexOf(' %}<!-- enter_date_of_birth -->');
+                        let addDOB = addRemember.slice(0,dobVariablePos+22) + ageVerificationVariables.requireDOB.toString() + addRemember.slice(afterDOBVariablePos);
+
+                        const redirectUrlVariablePos = addDOB.indexOf('redirectUrl = "');
+                        const afterRedirectUrlVariablePos = addDOB.indexOf('" %}<!-- redirectUrl -->');
+                        let addRedirect = addDOB.slice(0,redirectUrlVariablePos+15) + ageVerificationVariables.redirectUrl + addDOB.slice(afterRedirectUrlVariablePos);
+
+                        const backgroundUrlVariablePos = addRedirect.indexOf('backgroundUrl = "');
+                        const afterBackgroundUrlVariablePos = addRedirect.indexOf('" %}<!-- backgroundUrl -->');
+                        let addBackground = addRedirect.slice(0,backgroundUrlVariablePos+17) + ageVerificationVariables.backgroundUrl + addRedirect.slice(afterBackgroundUrlVariablePos);
+
+                        const logoUrlVariablePos = addBackground.indexOf('assign logoUrl = "');
+                        const afterLogoUrlVariablePos = addBackground.indexOf('" %}<!-- logoUrl -->');
+                        let addLogo = addBackground.slice(0,logoUrlVariablePos+18) + ageVerificationVariables.logoUrl + addBackground.slice(afterLogoUrlVariablePos);
+
+                        const headingVariablePos = addLogo.indexOf('capture adult_header %}');
+                        const afterHeadingVariablePos = addLogo.indexOf('{% endcapture %}<!-- adult_header -->');
+                        let addHeading = addLogo.slice(0,headingVariablePos+23) + ageVerificationVariables.headerText + addLogo.slice(afterHeadingVariablePos);
+
+                        const subheaderVariablePos = addHeading.indexOf('capture adult_text %}');
+                        const afterSubheaderVariablePos = addHeading.indexOf('{% endcapture %}<!-- adult_text -->');
+                        let addSubheading = addHeading.slice(0,subheaderVariablePos+21) + ageVerificationVariables.subheaderText + addHeading.slice(afterSubheaderVariablePos);
+
+                        const exitButtonVariablePos = addSubheading.indexOf('assign exitButton = ');
+                        const afterExitButtonVariablePos = addSubheading.indexOf(' %}<!-- exitButton -->');
+                        let addExit = addSubheading.slice(0,exitButtonVariablePos+20) + ageVerificationVariables.exitButton + addSubheading.slice(afterExitButtonVariablePos);
+
+                        const enterButtonTextPos = addExit.indexOf('assign enterButtonText = "');
+                        const afterEnterButtonTextPos = addExit.indexOf('" %}<!-- enterButtonText -->');
+                        let addEnterText = addExit.slice(0,enterButtonTextPos+26) + ageVerificationVariables.enterButtonText + addExit.slice(afterEnterButtonTextPos);
+
+                        const exitButtonTextPos = addEnterText.indexOf('assign exitButtonText = "');
+                        const afterExitButtonTextPos = addEnterText.indexOf('" %}<!-- exitButtonText -->');
+                        let addExitText = addEnterText.slice(0,exitButtonTextPos+25) + ageVerificationVariables.exitButtonText + addEnterText.slice(afterExitButtonTextPos);
+
+                        const transparentModalPos = addExitText.indexOf('assign transparentModal = ');
+                        const afterTransparentModalPos = addExitText.indexOf(' %}<!-- transparentModal -->');
+                        let addTransparentModal = addExitText.slice(0,transparentModalPos+26) + ageVerificationVariables.transparentModal.toString() + addExitText.slice(afterTransparentModalPos);
+
+                        const emailCapturePos = addTransparentModal.indexOf('assign isEmailCapture = ');
+                        const afterEmailCapturePos = addTransparentModal.indexOf(' %}<!-- isEmailCapture -->');
+                        let addEmailCapture = addTransparentModal.slice(0,emailCapturePos+24) + ageVerificationVariables.isEmailCapture.toString() + addTransparentModal.slice(afterEmailCapturePos);
+
+                        const ecTitlePos = addEmailCapture.indexOf('capture ec_title %}');
+                        const afterECTitlePos = addEmailCapture.indexOf('{% endcapture %}<!-- ec_title -->');
+                        let addECTitle = addEmailCapture.slice(0,ecTitlePos+19) + ageVerificationVariables.ecTitle + addEmailCapture.slice(afterECTitlePos);
+
+                        const ecTextPos = addECTitle.indexOf('capture ec_text %}');
+                        const afterECTextPos = addECTitle.indexOf('{% endcapture %}<!-- ec_text -->');
+                        let addECText = addECTitle.slice(0,ecTextPos+18) + ageVerificationVariables.ecText + addECTitle.slice(afterECTextPos);
+
+                        const ecTextcolorPos = addECText.indexOf('assign ec_textcolor = "');
+                        const afterECTextcolorPos = addECText.indexOf('" %}<!-- ec_textcolor -->');
+                        let addECTextcolor = addECText.slice(0,ecTextcolorPos+23) + ageVerificationVariables.ecTextColorRgb + addECText.slice(afterECTextcolorPos);
+
+                        const designModePos = addECTextcolor.indexOf('assign designMode = ');
+                        const afterDesignModePos = addECTextcolor.indexOf(' %}<!-- designMode -->');
+                        let addDesignMode = addECTextcolor.slice(0,designModePos+20) + ageVerificationVariables.designMode.toString() + addECTextcolor.slice(afterDesignModePos);
+
+                        const ecTitlecolorPos = addDesignMode.indexOf('assign ec_titlecolor = "');
+                        const afterECTitlecolorPos = addDesignMode.indexOf('" %}<!-- ec_titlecolor -->');
+                        let addECTitlecolor = addDesignMode.slice(0,ecTitlecolorPos+24) + ageVerificationVariables.ecTitleColorRgb + addDesignMode.slice(afterECTitlecolorPos);
+
+                        const overlayPos = addECTitlecolor.indexOf('assign backgroundOverlay = ');
+                        const afterOverlayPos = addECTitlecolor.indexOf(' %}<!-- backgroundOverlay -->');
+                        let addOverlay = addECTitlecolor.slice(0,overlayPos+27) + ageVerificationVariables.backgroundOverlay.toString() + addECTitlecolor.slice(afterOverlayPos);
+
+                        const overlayDarkPos = addOverlay.indexOf('assign backgroundOverlayDark = ');
+                        const afterOverlayDarkPos = addOverlay.indexOf(' %}<!-- backgroundOverlayColor -->');
+                        let addOverlayDark = addOverlay.slice(0,overlayDarkPos+31) + ageVerificationVariables.backgroundOverlayDark.toString() + addOverlay.slice(afterOverlayDarkPos);
+
+                        const modalPosition = addOverlayDark.indexOf('assign modalPosition = "');
+                        const afterModalPosition = addOverlayDark.indexOf('" %}<!-- modalPosition -->');
+                        let addModalPosition = addOverlayDark.slice(0,modalPosition+24) + ageVerificationVariables.modalPosition + addOverlayDark.slice(afterModalPosition);
+
+                        const dontShowPos = addModalPosition.indexOf('assign dontShow = ');
+                        const afterDontShowPos = addModalPosition.indexOf(' %}<!-- dontShow -->');
+                        let addDontShow = addModalPosition.slice(0,dontShowPos+18) + ageVerificationVariables.dontShow.toString() + addModalPosition.slice(afterDontShowPos);
+
+                        //update age verification liquid on the store
+                        const stringifiedAssetParams = JSON.stringify({
+                          asset: {
+                            key: "snippets/age-verification-with-email-capture.liquid",
+                            value: addDontShow
+                          }
+                        })
+                        const putOptions = {
+                          method: 'PUT',
+                          body: stringifiedAssetParams,
+                          credentials: 'include',
+                          headers: {
+                            'X-Shopify-Access-Token': ctx.session.accessToken,
+                            'Content-Type': 'application/json',
+                          },
+                        }  
+                        
+                        fetch(`https://${ctx.session.shop}/admin/api/${API_VERSION}/themes/${activeThemeId}/assets.json`, putOptions )
+                          .then((response) => response.json())
+                          .catch((error) => console.log('error', error));
+                      })
+                      .catch((error) => console.log('error', error));
+
+                    
+
+                  })
+                  .catch((error) => console.log('error', error));
+              })
+            } else {
+              // no variables currently set, no liquid file exists already
+              console.log('no variables for this store')
+              //adding age-verification-with-email-capture.liquid snippet
+
+              const stringifiedAssetParams = JSON.stringify({
+                asset: {
+                  key: "snippets/age-verification-with-email-capture.liquid",
+                  src: "https://raw.githubusercontent.com/baumant/age-verification-with-email-capture/master/age-verification-with-email-capture.liquid"
+                }
+              })
+              const putOptions = {
+                method: 'PUT',
+                body: stringifiedAssetParams,
+                credentials: 'include',
+                headers: {
+                  'X-Shopify-Access-Token': ctx.session.accessToken,
+                  'Content-Type': 'application/json',
+                },
+              }
+              // console.log(`https://${ctx.session.shop}/admin/api/${API_VERSION}/themes/${activeThemeId}/assets.json`, putOptions);
+              fetch(`https://${ctx.session.shop}/admin/api/${API_VERSION}/themes/${activeThemeId}/assets.json`, putOptions )
+                .then((response) => response.json())
+                .then((myJson) => {
+                  console.log(myJson);
+                })
+                .catch((error) => console.log('error', error));
+            }
+            
+          })
+          .catch((error) => console.log('error', error));
+
+      
 
       const stringifiedScriptParams = JSON.stringify({
         script_tag: {
@@ -120,6 +406,47 @@ async function installAgeVerification (ctx, next) {
       fetch(`https://${ctx.session.shop}/admin/api/${API_VERSION}/script_tags.json`, scriptTagPostOptions )
         .then((response) => {
           console.log('Script Response: ', response.url, response.status, response.statusText);
+
+          fetch(`https://${ctx.session.shop}/admin/api/${API_VERSION}/shop.json`, 
+            {
+              credentials: 'include',
+              headers: {
+                'X-Shopify-Access-Token': ctx.session.accessToken,
+                'Content-Type': 'application/json',
+              },
+              method: 'GET' 
+            })
+          .then((response) => response.json())
+          .then((shopJson) => {
+            // console.log(shopJson);
+            const stringifiedChimpBody = JSON.stringify({
+              "email_address": shopJson.shop.email,
+              "status": "subscribed",
+              "merge_fields": {
+                "FNAME": shopJson.shop.shop_owner,
+                "SSTORE": shopJson.shop.domain
+              },
+              "tags": ["age verify"]
+            })
+            // console.log(stringifiedChimpBody)
+            fetch(`https://us12.api.mailchimp.com/3.0/lists/b51087cf9b/members`, 
+              {
+                credentials: 'include',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': `apiKey ${MAILCHIMP_API_KEY}`
+                },
+                method: 'POST',
+                body: stringifiedChimpBody
+              })
+            .then((response) => response.json())
+            .then((mailchimpJson) => {
+              console.log('Added to Mailchimp: ', mailchimpJson.email_address, mailchimpJson.status)
+            })
+            .catch((error) => console.log('error adding to Mailchimp list ', error))
+          })
+          .catch((error) => console.log('error fetching shop info: ', error));
+          
         })
         .catch((error) => console.log('error', error));
     })

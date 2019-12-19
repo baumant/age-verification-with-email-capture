@@ -283,9 +283,8 @@
 
 <script>
 /*
-Disallow scrolling on body when age verification is up and display age verification, pulled in from scriptTag for easy shopify uninstall
+Display age verification, pulled in from scriptTag for easy shopify uninstall
 
-document.body.className += ' ' + 'noscroll';
 document.getElementById('prompt-background').style.display = 'flex';
 */
 
@@ -361,7 +360,6 @@ function ageCheck() {
     if( {{designMode}} == false ){
       document.cookie = 'twentyone=true;'+expires+"; path=/";
     }
-    document.body.className = document.body.className.replace("noscroll","");
     
     if( {{ isEmailCapture }} ){
       // will trigger showEmailCapture()
@@ -387,9 +385,6 @@ var twentyone = readCookie('twentyone');
 var emailcaptured = readCookie('emailcaptured');
 
 if (twentyone) {
-  // remove noscroll class if user is over 21, hide age verification
-  document.body.className = document.body.className.replace("noscroll","");
-
   if( {{ isEmailCapture }} && emailcaptured == null ){
     document.getElementById('prompt-background').classList.add('ec-height');
     showEmailCapture();
@@ -401,9 +396,6 @@ if (twentyone) {
 </script>
 
 <style>
-body.noscroll {
-  overflow: hidden !important;
-}
 #age-verification-logo{
   position: absolute;
   bottom: 7%;
