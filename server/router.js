@@ -604,7 +604,7 @@ async function checkVariables(ctx, next) {
     .catch((error) => console.log('error', error));
 
   ctx.body = ageVerificationVariables;
-  ctx.cookies.set('ageVerificationVariables', JSON.stringify(ageVerificationVariables), { httpOnly: false });
+  ctx.cookies.set('ageVerificationVariables', JSON.stringify(ageVerificationVariables), { httpOnly: false, secure: true, sameSite: 'none' });
   ctx.status = 200;
   
   // take a look at the response

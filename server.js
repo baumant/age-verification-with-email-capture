@@ -23,7 +23,8 @@ const { SHOPIFY_API_SECRET_KEY, SHOPIFY_API_KEY, API_VERSION } = process.env;
 app.prepare().then(() => {
   const server = new Koa();
   const router = new Router();
-  server.use(session(server));
+  server.proxy = true;
+  server.use(session({ secure: true, sameSite: 'none' }, server));
   server.use(bodyParser());
   server.keys = [SHOPIFY_API_SECRET_KEY];
 
@@ -59,7 +60,7 @@ app.prepare().then(() => {
       afterAuth(ctx) {
         const { shop, accessToken } = ctx.session;
         console.log(shop);
-          ctx.cookies.set('shopOrigin', shop, { httpOnly: false });
+          ctx.cookies.set('shopOrigin', shop, { httpOnly: false, secure: true, sameSite: 'none' });
         ctx.redirect('/');
         console.log('installing...');
         installAgeVerification(ctx);
