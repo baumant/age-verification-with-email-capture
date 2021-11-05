@@ -250,12 +250,13 @@
           id="ec-form-email"
           class="input-group__field newsletter__input{% if form.errors %} input--error{% endif %}"
           value="{{ form.email }}"
-          {% if general.newsletter_form.email_placeholder %}
+          {% assign placeholder = general.newsletter_form.email_placeholder | t %}
+          {% if placeholder contains "translation missing" %}
+            placeholder="Email address"
+            aria-label="Email address"
+          {% else %}
             placeholder="{{ 'general.newsletter_form.email_placeholder' | t }}"
             aria-label="{{ 'general.newsletter_form.email_placeholder' | t }}"
-          {% else %}
-            placeholder="Enter email address"
-            aria-label="Enter email address"
           {% endif %}
           aria-required="true"
           required
@@ -268,10 +269,11 @@
           {% endif %}>
         <span class="input-group__btn">
           <button type="submit" class="btn newsletter__submit" name="commit" id="Subscribe">
-            {% if general.newsletter_form.email_placeholder %}
-              <span class="newsletter__submit-text--large">{{ 'general.newsletter_form.submit' | t }}</span>
+            {% assign submitText = general.newsletter_form.submit | t %}
+            {% if submitText contains "translation missing" %}
+              <span class="newsletter__submit-text--large">Subscribe</span>
             {% else %}
-              <span class="newsletter__submit-text--large">Submit</span>
+              <span class="newsletter__submit-text--large">{{ 'general.newsletter_form.submit' | t }}</span>
             {% endif %}
           </button>
         </span>
